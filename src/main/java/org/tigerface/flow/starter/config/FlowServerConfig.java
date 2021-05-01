@@ -1,12 +1,12 @@
-package org.tigerface.starter.config;
+package org.tigerface.flow.starter.config;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.tigerface.starter.service.DeployService;
-import org.tigerface.starter.service.FlowBuilder;
+import org.tigerface.flow.starter.service.DeployService;
+import org.tigerface.flow.starter.service.FlowBuilder;
 
 @Configuration
 //@ConditionalOnClass(RestRoute.class)

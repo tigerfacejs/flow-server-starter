@@ -1,11 +1,11 @@
-package org.tigerface.starter.service;
+package org.tigerface.flow.starter.service;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.tigerface.starter.domain.Flow;
-import org.tigerface.starter.domain.FlowStatus;
+import org.tigerface.flow.starter.domain.Flow;
+import org.tigerface.flow.starter.domain.FlowStatus;
 
 public class DeployService {
     @Autowired

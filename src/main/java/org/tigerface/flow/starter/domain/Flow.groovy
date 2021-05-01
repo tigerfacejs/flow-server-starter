@@ -1,4 +1,4 @@
-package org.tigerface.starter.domain
+package org.tigerface.flow.starter.domain
 
 import lombok.Data
 
