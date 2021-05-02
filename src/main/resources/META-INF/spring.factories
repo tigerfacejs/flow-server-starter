@@ -1,3 +1,5 @@
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.tigerface.flow.starter.config.FlowServerConfig
+org.tigerface.flow.starter.config.FlowServerAutoConfig,\
+org.tigerface.flow.starter.config.RedisAutoConfig,\
+org.tigerface.flow.starter.config.MongoAutoConfig

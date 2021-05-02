@@ -1,4 +1,4 @@
-package org.tigerface.flow.starter.config;
+package org.tigerface.flow.starter.route;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;

@@ -5,13 +5,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.tigerface.flow.starter.route.RestRoute;
 import org.tigerface.flow.starter.service.DeployService;
 import org.tigerface.flow.starter.service.FlowBuilder;
 
 @Configuration
 //@ConditionalOnClass(RestRoute.class)
 //@ConditionalOnMissingBean(type="org.apache.camel.CamelContext")
-public class FlowServerConfig {
+public class FlowServerAutoConfig {
 
     @Bean
     public FlowBuilder flowBuilder() {
