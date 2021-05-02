@@ -1,12 +1,15 @@
 package org.tigerface.flow.starter.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.tigerface.flow.starter.domain.Flow;
 import org.tigerface.flow.starter.domain.FlowStatus;
 
+@Slf4j
 public class DeployService {
     @Autowired
     CamelContext camelContext;
@@ -37,6 +40,7 @@ public class DeployService {
       direct:{flowId}_v{version} （实际部署版本）
      */
     boolean deploy(String flowJson) throws Exception {
+        log.info("开始部署");
         // entry 是 route 的唯一入口，也就是 from，最基本的是 rest 和 direct
         Flow flow = flowBuilder.parse(flowJson);
         String entry = flow.getEntry().replaceAll(":", "_");

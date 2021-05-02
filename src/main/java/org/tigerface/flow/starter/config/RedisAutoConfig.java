@@ -24,14 +24,14 @@ public class RedisAutoConfig {
     @Value("${spring.redis.port}")
     private int port;
 
-    @Value("${spring.redis.username}")
-    private String username = "default";
+    @Value("${spring.redis.username:default}")
+    private String username;
 
-    @Value("${spring.redis.password}")
+    @Value("${spring.redis.password:}")
     private String password;
 
-    @Value("${spring.redis.db}")
-    private int db = 0;
+    @Value("${spring.redis.db:0}")
+    private int db;
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {

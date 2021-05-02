@@ -1,6 +1,7 @@
 package org.tigerface.flow.starter.domain
 
 import lombok.Data
+import org.tigerface.flow.starter.domain.FlowStatus;
 
 @Data
 public class Flow {

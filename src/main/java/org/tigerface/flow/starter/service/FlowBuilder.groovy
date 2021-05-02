@@ -12,6 +12,7 @@ import org.apache.camel.model.language.JsonPathExpression
 import org.apache.camel.model.language.XPathExpression
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
+import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import org.tigerface.flow.starter.domain.Flow
 
