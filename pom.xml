@@ -60,10 +60,9 @@
             <version>${camel.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-mongodb-starter</artifactId>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-mongodb</artifactId>
             <version>${camel.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
