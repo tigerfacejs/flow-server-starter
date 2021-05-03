@@ -8,26 +8,27 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy;
 
 @Configuration
 //@ConditionalOnClass(MongoClient.class)
-//@EnableConfigurationProperties(MongoProperties.class)
-@ConditionalOnMissingBean(type = "org.springframework.data.mongodb.MongoDbFactory")
+//@ConditionalOnMissingBean(type = "org.springframework.data.mongodb.MongoDbFactory")
 public class MongoAutoConfig {
-    @Value('${flow.mongodb.host:localhost}')
+    @Value('${spring.data.mongodb.host:localhost}')
     private String host;
 
-    @Value('${flow.mongodb.port:27017}')
+    @Value('${spring.data.mongodb.port:27017}')
     private int port;
 
-    @Value('${flow.mongodb.username:root}')
+    @Value('${spring.data.mongodb.username:root}')
     private String username;
 
-    @Value('${flow.mongodb.password:}')
+    @Value('${spring.data.mongodb.password:}')
     private String password;
 
-    public @Bean MongoClient mongoClient() {
+    @Bean
+    public MongoClient flowDB() {
         return MongoClients.create("mongodb://${username}:${password}@${host}:${port}");
     }
 }
