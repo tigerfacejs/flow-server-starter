@@ -3,6 +3,8 @@ package org.tigerface.flow.starter.route;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
 
+import java.util.Map;
+
 public class RestRoute extends RouteBuilder {
     private int port = 8086;
 
@@ -20,5 +22,19 @@ public class RestRoute extends RouteBuilder {
 
         from("rest:get:who").transform().simple("这是一个 Flow Server，你可以通过 POST ..:"+port+"/deploy 来部署一个流程。")
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8")).setId("Who");
+
+        from("rest:post:mq")
+                .unmarshal().json()
+                .marshal().json(Map.class)
+                .log("**** body **** ${body}")
+                .to("spring-rabbitmq:default?routingKey=flow")
+                .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
+                .setId("SendHeartBeat");
+
+        from("spring-rabbitmq:default?queues=flow&routingKey=flow")
+                .unmarshal().json()
+                .log("**** from mq **** ${body}")
+                .setBody(constant("{\"msg\":\"OK\"}"))
+                .setId("SubScribeCommandQueue");
     }
 }
