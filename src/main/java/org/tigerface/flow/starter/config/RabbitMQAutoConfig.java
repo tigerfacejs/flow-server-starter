@@ -22,7 +22,7 @@ public class RabbitMQAutoConfig {
     private String password;
 
     @Bean
-    MessageConverter createMessageConverter() {
+    MessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();
     }
 }
