@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class RestRoute extends RouteBuilder {
     private int port = 8086;
+    private String path = "/Users/tiger/tmp/testRepo";
 
     @Override
     public void configure() throws Exception {
@@ -22,14 +23,20 @@ public class RestRoute extends RouteBuilder {
                 .corsHeaderProperty("Access-Control-Allow-Headers", "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization");
 
         // 基础流程，系统基本状态
-        from("rest:get:who").transform().simple("这是一个 Flow Server，你可以通过 POST ..:"+port+"/deploy 来部署一个流程。")
+        from("rest:get:who").transform().simple("这是一个 Flow Server，你可以通过 POST ..:" + port + "/deploy 来部署一个流程。")
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8")).setId("Who");
 
         // 推流程入口，仅用于测试部署流程
         from("rest:post:deploy").to("direct:deploy").description("热部署测试").setId("HotDeploy");
 
+        from("file://" + path + "?charset=utf-8&recursive=true&delete=true&include=.*\\.json$&exclude=package.json")
+                .log("---deploy-- \n${body}")
+                .transform().method("deployService", "deploy")
+                .description("文件部署流程")
+                .setId("DeployFlowFromPath");
+
         // 部署主流程
-        from("direct:deploy").bean("deployService", "deploy").description("内部部署流程").setId("DeployFlow");
+        from("direct:deploy").log("---deploy-- \n${body}").bean("deployService", "deploy").description("内部部署流程").setId("DeployFlow");
 
         // mq 发布测试
         from("rest:post:mq")
@@ -40,9 +47,10 @@ public class RestRoute extends RouteBuilder {
                 .setId("SendHeartBeat");
 
         // mq 订阅测试
-        from("spring-rabbitmq:default?queues=flow&routingKey=flow")
+        from("spring-rabbitmq:default?queues=flow-cmd&routingKey=command")
                 .unmarshal().json(Map.class)
-                .log("**** from mq **** ${body[msg]}")
+                .log("**** from mq **** ${body}")
+                .to("direct:git")
                 .setBody(constant("{\"msg\":\"OK\"}"))
                 .setId("SubScribeCommandQueue");
 
@@ -106,6 +114,9 @@ public class RestRoute extends RouteBuilder {
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
                 .setId("InsertDataToMySql");
 
-
+        from("direct:git")
+                .to("exec:sh?args=-c \"rm -rf " + path + "/flow-json\"")
+                .to("git://" + path + "/flow-json?operation=clone&branchName=master&remotePath=https://github.com/tigerfacejs/flow-json.git&tagName=${body[payload][tagName]}")
+                .setId("PullFromGit");
     }
 }
