@@ -11,7 +11,12 @@ import java.util.Map;
 
 public class RestRoute extends RouteBuilder {
     private int port = 8086;
-    private String path = "/Users/tiger/tmp/testRepo";
+
+    @Value("${flow.git.tmpdir}")
+    private String path;
+
+    @Value("${flow.git.url}")
+    private String gitUrl;
 
     @Value("${flow.git.username}")
     private String gitUser;
@@ -121,11 +126,11 @@ public class RestRoute extends RouteBuilder {
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
                 .setId("InsertDataToMySql");
 
-        System.out.println("git://" + path + "/flow-json?operation=clone&branchName=master&remotePath=https://github.com/tigerfacejs/flow-json.git&tagName=${body[payload][tagName]}&username="+gitUser+"&password="+gitPwd);
+//        System.out.println("git://" + path + "/flow-json?operation=clone&branchName=master&remotePath=https://github.com/tigerfacejs/flow-json.git&tagName=${body[payload][tagName]}&username="+gitUser+"&password="+gitPwd);
 
         from("direct:git")
                 .to("exec:sh?args=-c \"rm -rf " + path + "/flow-json\"")
-                .to("git://" + path + "/flow-json?operation=clone&branchName=master&remotePath=https://github.com/tigerfacejs/flow-json.git&tagName=${body[payload][tagName]}&username="+gitUser+"&password="+gitPwd)
+                .to("git://" + path + "/flow-json?operation=clone&branchName=master&remotePath="+gitUrl+"&tagName=${body[payload][tagName]}&username="+gitUser+"&password="+gitPwd)
                 .setId("PullFromGit");
     }
 }
