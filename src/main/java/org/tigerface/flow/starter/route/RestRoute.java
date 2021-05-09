@@ -5,12 +5,19 @@ import org.apache.camel.model.dataformat.JsonDataFormat;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.spi.RestConfiguration;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Map;
 
 public class RestRoute extends RouteBuilder {
     private int port = 8086;
     private String path = "/Users/tiger/tmp/testRepo";
+
+    @Value("${flow.git.username}")
+    private String gitUser;
+
+    @Value("${flow.git.password}")
+    private String gitPwd;
 
     @Override
     public void configure() throws Exception {
@@ -47,7 +54,7 @@ public class RestRoute extends RouteBuilder {
                 .setId("SendHeartBeat");
 
         // mq 订阅测试
-        from("spring-rabbitmq:default?queues=flow-cmd&routingKey=command")
+        from("spring-rabbitmq:flow.topic?queues=flow-cmd&routingKey=command")
                 .unmarshal().json(Map.class)
                 .log("**** from mq **** ${body}")
                 .to("direct:git")
@@ -114,9 +121,11 @@ public class RestRoute extends RouteBuilder {
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
                 .setId("InsertDataToMySql");
 
+        System.out.println("git://" + path + "/flow-json?operation=clone&branchName=master&remotePath=https://github.com/tigerfacejs/flow-json.git&tagName=${body[payload][tagName]}&username="+gitUser+"&password="+gitPwd);
+
         from("direct:git")
                 .to("exec:sh?args=-c \"rm -rf " + path + "/flow-json\"")
-                .to("git://" + path + "/flow-json?operation=clone&branchName=master&remotePath=https://github.com/tigerfacejs/flow-json.git&tagName=${body[payload][tagName]}")
+                .to("git://" + path + "/flow-json?operation=clone&branchName=master&remotePath=https://github.com/tigerfacejs/flow-json.git&tagName=${body[payload][tagName]}&username="+gitUser+"&password="+gitPwd)
                 .setId("PullFromGit");
     }
 }
