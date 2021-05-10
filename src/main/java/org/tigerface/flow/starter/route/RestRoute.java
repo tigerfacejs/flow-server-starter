@@ -24,6 +24,9 @@ public class RestRoute extends RouteBuilder {
     @Value("${flow.git.password}")
     private String gitPwd;
 
+    @Value("${flow.command.queue}")
+    private String commandQueue;
+
     @Override
     public void configure() throws Exception {
         restConfiguration()
@@ -59,7 +62,7 @@ public class RestRoute extends RouteBuilder {
                 .setId("SendHeartBeat");
 
         // mq 订阅测试
-        from("spring-rabbitmq:flow.topic?queues=flow-cmd&routingKey=command")
+        from("spring-rabbitmq:flow.topic?queues=" + commandQueue)
                 .unmarshal().json(Map.class)
                 .log("**** from mq **** ${body}")
                 .to("direct:git")
@@ -126,11 +129,11 @@ public class RestRoute extends RouteBuilder {
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
                 .setId("InsertDataToMySql");
 
-//        System.out.println("git://" + path + "/flow-json?operation=clone&branchName=master&remotePath=https://github.com/tigerfacejs/flow-json.git&tagName=${body[payload][tagName]}&username="+gitUser+"&password="+gitPwd);
+        System.out.println("git://" + path + "/flow-json?operation=clone&branchName=master&remotePath=" + gitUrl + "=${body[payload][tagName]}&username=" + gitUser + "&password=" + gitPwd);
 
         from("direct:git")
                 .to("exec:sh?args=-c \"rm -rf " + path + "/flow-json\"")
-                .to("git://" + path + "/flow-json?operation=clone&branchName=master&remotePath="+gitUrl+"&tagName=${body[payload][tagName]}&username="+gitUser+"&password="+gitPwd)
+                .to("git://" + path + "/flow-json?operation=clone&branchName=master&remotePath=" + gitUrl + "&tagName=${body[payload][tagName]}&username=" + gitUser + "&password=" + gitPwd)
                 .setId("PullFromGit");
     }
 }
