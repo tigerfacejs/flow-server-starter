@@ -92,6 +92,7 @@ class FlowBuilder {
                             def entry = flow.getFullIDEntry();
                             def id = flow.getFullIDEntry().replaceAll(":", "_");
                             rd = from(entry).routeId(id).routeDescription(flow.desc);
+                            // wiretap 向 es 写 log
                             rd.wireTap("direct:toES").copy(false).newExchange(new Processor() {
                                 @Override
                                 void process(Exchange exchange) throws Exception {
