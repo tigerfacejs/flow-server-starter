@@ -1,13 +1,24 @@
 package org.tigerface.flow.starter.service
 
 import groovy.json.JsonSlurper
+import org.apache.camel.Exchange
 import org.apache.camel.Expression
+import org.apache.camel.Processor
 import org.apache.camel.builder.ExpressionBuilder
 import org.apache.camel.builder.RouteBuilder
 import org.apache.camel.builder.SimpleBuilder
 import org.apache.camel.language.spel.SpelExpression
 import org.apache.camel.model.ChoiceDefinition
+import org.apache.camel.model.DataFormatDefinition
+import org.apache.camel.model.LogDefinition
+import org.apache.camel.model.ProcessorDefinition
 import org.apache.camel.model.RouteDefinition
+import org.apache.camel.model.UnmarshalDefinition
+import org.apache.camel.model.WireTapDefinition
+import org.apache.camel.model.dataformat.Base64DataFormat
+import org.apache.camel.model.dataformat.JacksonXMLDataFormat
+import org.apache.camel.model.dataformat.JsonDataFormat
+import org.apache.camel.model.dataformat.JsonLibrary
 import org.apache.camel.model.language.JsonPathExpression
 import org.apache.camel.model.language.XPathExpression
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,6 +26,8 @@ import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import org.tigerface.flow.starter.domain.Flow
+
+import java.text.SimpleDateFormat
 
 /**
  * 流解析器
@@ -76,13 +89,23 @@ class FlowBuilder {
                 for (def node : flow.nodes) {
                     switch (node.eip) {
                         case "from":
-                            rd = from(flow.getFullIDEntry()).routeId(flow.getFullIDEntry().replaceAll(":", "_")).routeDescription(flow.desc);
+                            def entry = flow.getFullIDEntry();
+                            def id = flow.getFullIDEntry().replaceAll(":", "_");
+                            rd = from(entry).routeId(id).routeDescription(flow.desc);
+                            rd.wireTap("direct:toES").copy(false).newExchange(new Processor() {
+                                @Override
+                                void process(Exchange exchange) throws Exception {
+                                    def now = new Date();
+                                    exchange.getIn().setBody(['flowId':flow.id, 'name':flow.name, 'desc':flow.desc, 'version':flow.version, 'requestTime':new SimpleDateFormat('yyyy-MM-dd hh:mm:ss.S').format(now)]);
+                                    exchange.getIn().setHeader("ESIndexName", "flowlog");
+                                }
+                            })
                             break;
                         case "transform":
                             rd.transform(exp(node.props));
                             break;
                         case "to":
-                            rd.to(node.props.uri);
+                            rd.toD(node.props.uri);
                             break;
                         case "bean":
                             rd.bean(node.props.bean, node.props.method);
@@ -96,11 +119,20 @@ class FlowBuilder {
                         case "filter":
                             rd.filter(exp(node.props));
                             break;
+                        case "unmarshal":
+                            rd.unmarshal(dataFormat(node.props));
+                            break;
+                        case "marshal":
+                            rd.marshal(dataFormat(node.props));
+                            break;
                         case "script":
                             rd.script(exp(node.props));
                             break;
                         case "log":
-                            rd.log(node.props.exp);
+                            LogDefinition ld = new LogDefinition(node.props.exp);
+                            if (node.props.level) ld.setLoggingLevel(node.props.level);
+//                            rd.log();
+                            rd.process(ld);
                             break;
                         case "choice":
                             ChoiceDefinition cd = rd.choice();
@@ -148,6 +180,33 @@ class FlowBuilder {
                 return new XPathExpression(props.script);
             case "groovy":
                 return ExpressionBuilder.languageExpression("groovy", props.script);
+            default:
+                throw new RuntimeException("不支持的表达式语言：${props.lang}");
+        }
+    }
+
+    /**
+     * 数据格式
+     * @param props
+     * @return
+     */
+    private DataFormatDefinition dataFormat(props) {
+        switch (props.format) {
+            case "json":
+                JsonDataFormat json = new JsonDataFormat(JsonLibrary.Jackson);
+                if (props.pretty) json.setPrettyPrint(Boolean.toString(props.pretty));
+                if (props.type) json.setUnmarshalTypeName(props.type);
+                return json;
+            case "base64":
+                Base64DataFormat base64 = new Base64DataFormat();
+                return base64;
+            case "xml":
+                JacksonXMLDataFormat xml = new JacksonXMLDataFormat();
+                if (props.pretty) xml.setPrettyPrint(Boolean.toString(props.pretty));
+                if (props.type) xml.setUnmarshalTypeName(props.type);
+                return xml;
+            default:
+                throw new RuntimeException("不支持的数据格式：${props.format}");
         }
     }
 }

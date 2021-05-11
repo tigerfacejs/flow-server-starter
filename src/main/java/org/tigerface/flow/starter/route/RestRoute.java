@@ -50,6 +50,7 @@ public class RestRoute extends RouteBuilder {
         esComp.setPassword(esPwd);
 
         camelContext.addComponent("elasticsearch-rest", esComp);
+        camelContext.setStreamCaching(true);
 
         restConfiguration()
                 .port(port)
@@ -155,15 +156,27 @@ public class RestRoute extends RouteBuilder {
 
         from("direct:git")
                 .to("exec:sh?args=-c \"rm -rf " + path + "/flow-json\"")
-                .to("git://" + path + "/flow-json?operation=clone&branchName=master&remotePath=" + gitUrl + "&tagName=${body[payload][tagName]}&username=" + gitUser + "&password=" + gitPwd)
+                .toD("git://" + path + "/flow-json?operation=clone&branchName=master&remotePath=" + gitUrl + "&tagName=${body.payload.tagName}&username=" + gitUser + "&password=" + gitPwd)
                 .setId("PullFromGit");
 
-        from("rest:get:es")
+        from("rest:get:es/{ESIndexName}")
                 .setBody().groovy("return ['query':['match_all': new HashMap()]];")
-                .to("elasticsearch-rest://docker-cluster?operation=Search&indexName=customer")
-                .log("**** body **** ${body}")
+                .toD("elasticsearch-rest://docker-cluster?operation=Search&indexName=${header.ESIndexName}")
+//                .log("**** body **** ${body}")
                 .marshal().json()
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
                 .setId("SearchElasticsearch");
+
+
+        from("rest:post:es/{ESIndexName}")
+                .unmarshal().json(Map.class)
+                .to("direct:toES")
+                .marshal().json()
+                .setHeader("Content-Type", constant("application/json; charset=UTF-8"));
+
+        from("direct:toES")
+                .toD("elasticsearch-rest://docker-cluster?operation=Index&indexName=${header.ESIndexName}")
+//                .log("**** body **** ${body}")
+                .setId("AddToElasticsearch");
     }
 }
