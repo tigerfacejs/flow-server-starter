@@ -1,16 +1,22 @@
 package org.tigerface.flow.starter.route;
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.elasticsearch.ElasticsearchComponent;
 import org.apache.camel.model.dataformat.JsonDataFormat;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.spi.RestConfiguration;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Map;
 
 public class RestRoute extends RouteBuilder {
     private int port = 8086;
+
+    @Autowired
+    CamelContext camelContext;
 
     @Value("${flow.git.tmpdir}")
     private String path;
@@ -27,8 +33,24 @@ public class RestRoute extends RouteBuilder {
     @Value("${flow.command.queue}")
     private String commandQueue;
 
+    @Value("${flow.elasticsearch.url}")
+    private String esUrl;
+
+    @Value("${flow.elasticsearch.username:elastic}")
+    private String esUser;
+
+    @Value("${flow.elasticsearch.password}")
+    private String esPwd;
+
     @Override
     public void configure() throws Exception {
+        ElasticsearchComponent esComp = new ElasticsearchComponent();
+        esComp.setHostAddresses(esUrl);
+        esComp.setUser(esUser);
+        esComp.setPassword(esPwd);
+
+        camelContext.addComponent("elasticsearch-rest", esComp);
+
         restConfiguration()
                 .port(port)
                 .enableCORS(true)
@@ -129,11 +151,19 @@ public class RestRoute extends RouteBuilder {
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
                 .setId("InsertDataToMySql");
 
-        System.out.println("git://" + path + "/flow-json?operation=clone&branchName=master&remotePath=" + gitUrl + "=${body[payload][tagName]}&username=" + gitUser + "&password=" + gitPwd);
+//        System.out.println("git://" + path + "/flow-json?operation=clone&branchName=master&remotePath=" + gitUrl + "=${body[payload][tagName]}&username=" + gitUser + "&password=" + gitPwd);
 
         from("direct:git")
                 .to("exec:sh?args=-c \"rm -rf " + path + "/flow-json\"")
                 .to("git://" + path + "/flow-json?operation=clone&branchName=master&remotePath=" + gitUrl + "&tagName=${body[payload][tagName]}&username=" + gitUser + "&password=" + gitPwd)
                 .setId("PullFromGit");
+
+        from("rest:get:es")
+                .setBody().groovy("return ['query':['match_all': new HashMap()]];")
+                .to("elasticsearch-rest://docker-cluster?operation=Search&indexName=customer")
+                .log("**** body **** ${body}")
+                .marshal().json()
+                .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
+                .setId("SearchElasticsearch");
     }
 }
