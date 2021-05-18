@@ -84,20 +84,22 @@ class FlowBuilder {
         def builder = new RouteBuilder() {
             @Override
             void configure() throws Exception {
-
                 RouteDefinition rd;
                 for (def node : flow.nodes) {
-                    switch (node.eip) {
+                    def type = node.type ? node.type : node.eip;
+                    switch (type) {
                         case "from":
-                            def entry = flow.getFullIDEntry();
-                            def id = flow.getFullIDEntry().replaceAll(":", "_");
-                            rd = from(entry).routeId(id).routeDescription(flow.desc);
+//                            def entry = flow.getFullIDEntry();
+//                            def id = flow.getFullIDEntry().replaceAll(":", "_");
+//                            rd = from(entry).routeId(id).routeDescription(flow.desc);
+
+                            rd = from(node.props.uri).routeId(flow.getId()).routeDescription(flow.desc);
                             // wiretap 向 es 写 log
                             rd.wireTap("direct:toES").copy(false).newExchange(new Processor() {
                                 @Override
                                 void process(Exchange exchange) throws Exception {
                                     def now = new Date();
-                                    exchange.getIn().setBody(['flowId':flow.id, 'name':flow.name, 'desc':flow.desc, 'version':flow.version, 'requestTime':new SimpleDateFormat('yyyy-MM-dd hh:mm:ss.S').format(now)]);
+                                    exchange.getIn().setBody(['flowId': flow.id, 'name': flow.name, 'desc': flow.desc, 'version': flow.version, 'requestTime': new SimpleDateFormat('yyyy-MM-dd hh:mm:ss.S').format(now)]);
                                     exchange.getIn().setHeader("ESIndexName", "flowlog");
                                 }
                             })
