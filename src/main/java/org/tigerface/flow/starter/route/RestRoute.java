@@ -67,6 +67,10 @@ public class RestRoute extends RouteBuilder {
         // Rest 部署流程入口
         from("rest:post:flow").to("direct:deploy").description("部署流程入口").setId("DeployFlow");
 
+        // Rest 删除流程入口
+        from("rest:delete:flow/{id}").setBody(header("id"))
+                .log("---remove-- \n${body}")
+                .bean("deployService", "remove").description("删除流程入口").setId("RemoveFlow");
 
         // 文件部署流程
         from("file://" + path + "?charset=utf-8&recursive=true&delete=true&include=.*\\.json$&exclude=package.json")
