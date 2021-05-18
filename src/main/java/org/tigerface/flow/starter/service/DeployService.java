@@ -1,9 +1,16 @@
 package org.tigerface.flow.starter.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.camel.Route;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tigerface.flow.starter.domain.Flow;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 public class DeployService {
@@ -45,5 +52,17 @@ public class DeployService {
             return camelContext.removeRoute(id);
         }
         return false;
+    }
+
+    Object getFlow(String id) throws UnsupportedEncodingException {
+        Route route = camelContext.getRoute(id);
+        Map map = new HashMap<String, Object>();
+        if (route != null) {
+            map.put("id", route.getId());
+            map.put("uri", URLDecoder.decode(route.getEndpoint().getEndpointUri(), "UTF-8"));
+            map.put("uptimeMillis", route.getUptimeMillis());
+            map.put("description", route.getDescription());
+        }
+        return map;
     }
 }
