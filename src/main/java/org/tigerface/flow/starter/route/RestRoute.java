@@ -61,32 +61,47 @@ public class RestRoute extends RouteBuilder {
                 .corsHeaderProperty("Access-Control-Allow-Headers", "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization");
 
         // 基础流程，系统基本状态
-        from("rest:get:who").transform().simple("这是一个 Flow Server，你可以通过 POST ..:" + port + "/deploy 来部署一个流程。")
-                .setHeader("Content-Type", constant("application/json; charset=UTF-8")).description("检查入口").setId("Who");
+        from("rest:get:who")
+                .transform().simple("这是一个 Flow Server，你可以通过 POST ..:" + port + "/deploy 来部署一个流程。")
+                .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
+                .group("系统流程").description("检查入口").setId("Who");
 
         // Rest 部署流程入口
-        from("rest:post:flow").to("direct:deploy").description("部署流程入口").setId("DeployFlow");
+        from("rest:post:flow")
+                .to("direct:deploy")
+                .group("系统流程").description("部署流程入口").setId("DeployFlow");
 
+        // Rest 获取流程信息
         from("rest:get:flow/{id}").setBody(header("id"))
                 .bean("deployService", "getFlow")
                 .marshal().json()
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
-                .description("流程信息").setId("GetFlowInfo");
+                .group("系统流程").description("获取流程信息").setId("GetFlowInfo");
+
+        // Rest 列出流程信息
+        from("rest:get:flows")
+                .bean("deployService", "listFlows")
+                .marshal().json()
+                .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
+                .group("系统流程").description("列出全部流程").setId("ListFlows");
 
         // Rest 删除流程入口
         from("rest:delete:flow/{id}").setBody(header("id"))
                 .log("---remove-- \n${body}")
-                .bean("deployService", "remove").description("删除流程入口").setId("RemoveFlow");
+                .bean("deployService", "remove")
+                .group("系统流程").description("删除流程入口").setId("RemoveFlow");
 
         // 文件部署流程
         from("file://" + path + "?charset=utf-8&recursive=true&delete=true&include=.*\\.json$&exclude=package.json")
                 .log("---deploy-- \n${body}")
                 .transform().method("deployService", "deploy")
-                .description("文件部署流程")
-                .setId("DeployFlowFromPath");
+                .routeGroup("系统流程").description("文件部署流程").setId("DeployFlowFromPath");
 
         // 部署主流程
-        from("direct:deploy").log("---deploy-- \n${body}").bean("deployService", "deploy").description("部署主流程").setId("MainDeployFlow");
+        from("direct:deploy")
+                .log("---deploy-- \n${body}")
+                .bean("deployService", "deploy")
+                .group("系统流程").description("部署主流程").setId("MainDeployFlow");
 
 //        // mq 发布测试
 //        from("rest:post:mq")
@@ -189,7 +204,6 @@ public class RestRoute extends RouteBuilder {
         from("direct:toES")
                 .toD("elasticsearch-rest://docker-cluster?operation=Index&indexName=${header.ESIndexName}")
 //                .log("**** body **** ${body}")
-                .description("写 elasticsearch 流程")
-                .setId("AddToElasticsearch");
+                .group("系统流程").description("写 elasticsearch 流程").setId("AddToElasticsearch");
     }
 }

@@ -93,7 +93,7 @@ class FlowBuilder {
 //                            def id = flow.getFullIDEntry().replaceAll(":", "_");
 //                            rd = from(entry).routeId(id).routeDescription(flow.desc);
 
-                            rd = from(node.props.uri).routeId(flow.getId()).routeDescription(flow.json);
+                            rd = from(node.props.uri).routeId(flow.getId()).routeGroup(flow.getGroup()).routeDescription(flow.json);
                             // wiretap 向 es 写 log
                             rd.wireTap("direct:toES").copy(false).newExchange(new Processor() {
                                 @Override

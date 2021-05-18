@@ -52,20 +52,43 @@ public class DeployService {
         return false;
     }
 
+    Object listFlows() {
+        def routes = camelContext.getRoutes();
+        Map<String, Map> info = new HashMap<>();
+        for (Route route : routes) {
+            def groupName = route.getGroup();
+            Map group = info.get(groupName);
+            if (group == null) {
+                group = ['title': groupName, 'key': groupName, 'children': new ArrayList()];
+                info.put(groupName, group);
+            }
+            group.get('children').add([
+                    'key'  : route.getId(),
+                    'title': getRouteInfo(route).get("json").get("desc")
+            ]);
+        }
+        return info.values();
+    }
+
+    private Map getRouteInfo(Route route) {
+        def desc = ['desc': route.getDescription()];
+        try {
+            desc = JSON.parse(route.getDescription())
+        } catch (IllegalStateException e) {
+            // ignore
+        }
+        return [
+                'id'          : route.getId(),
+                'group'       : route.getGroup(),
+                'uri'         : URLDecoder.decode(route.getEndpoint().getEndpointUri(), "UTF-8"),
+                'uptimeMillis': route.getUptimeMillis(),
+                'json'        : desc];
+    }
+
     Object getFlow(String id) throws UnsupportedEncodingException {
         Route route = camelContext.getRoute(id);
         if (route != null) {
-            def desc = ['desc': route.getDescription()];
-            try {
-                desc = JSON.parse(route.getDescription())
-            } catch (IllegalStateException e) {
-                // ignore
-            }
-            return [
-                    'id'          : route.getId(),
-                    'uri'         : URLDecoder.decode(route.getEndpoint().getEndpointUri(), "UTF-8"),
-                    'uptimeMillis': route.getUptimeMillis(),
-                    'json' : desc];
+            return getRouteInfo(route);
         }
         return [];
     }

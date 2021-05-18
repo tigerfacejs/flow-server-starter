@@ -8,6 +8,7 @@ public class Flow {
     String id;
     String json;
     String name;
+    String group;
     String desc;
     String status = FlowStatus.draft.toString();
     String version;
