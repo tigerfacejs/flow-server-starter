@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.Map;
 
 public class RestRoute extends RouteBuilder {
-    private int port = 8086;
+//    private int port = 8086;
 
     @Autowired
     CamelContext camelContext;
@@ -53,7 +53,7 @@ public class RestRoute extends RouteBuilder {
         camelContext.setStreamCaching(true);
 
         restConfiguration()
-                .port(port)
+                .component("servlet")
                 .enableCORS(true)
                 .corsAllowCredentials(true);
 //                .bindingMode(RestBindingMode.off)
@@ -61,7 +61,7 @@ public class RestRoute extends RouteBuilder {
         // 基础流程，系统基本状态
         rest().get("/who").route()
 //        from("rest:get:who")
-                .transform().simple("这是一个 Flow Server，你可以通过 POST ..:" + port + "/deploy 来部署一个流程。")
+                .transform().simple("这是一个 Flow Server，你可以通过 POST ../deploy 来部署一个流程。")
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
                 .group("系统流程").description("检查入口").setId("Who");
 
