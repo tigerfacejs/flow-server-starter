@@ -104,6 +104,13 @@ class FlowBuilder {
                                 }
                             })
                             break;
+                        case "cors":
+                            rd.setHeader("Access-Control-Allow-Credentials", constant("true"));
+                            rd.setHeader("Access-Control-Allow-Headers", constant("Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"));
+                            rd.setHeader("Access-Control-Allow-Origin", header("Origin"));
+                            rd.setHeader("Access-Control-Allow-Methods", constant("GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, CONNECT, PATCH"));
+                            rd.setHeader("Access-Control-Max-Age", constant("3600"));
+                            break;
                         case "transform":
                             rd.transform(exp(node.props));
                             break;
