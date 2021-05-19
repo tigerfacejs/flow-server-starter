@@ -55,10 +55,8 @@ public class RestRoute extends RouteBuilder {
         restConfiguration()
                 .port(port)
                 .enableCORS(true)
-                .corsAllowCredentials(true)
-                .bindingMode(RestBindingMode.off)
-                .corsHeaderProperty("Access-Control-Allow-Origin", "*")
-                .corsHeaderProperty("Access-Control-Allow-Headers", "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization");
+                .corsAllowCredentials(true);
+//                .bindingMode(RestBindingMode.off)
 
         // 基础流程，系统基本状态
         from("rest:get:who")
@@ -68,18 +66,37 @@ public class RestRoute extends RouteBuilder {
 
         // Rest 部署流程入口
         from("rest:post:flow")
+                .setHeader("Access-Control-Allow-Credentials", constant("true"))
+                .setHeader("Access-Control-Allow-Headers", constant("Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"))
+//                .setHeader("Access-Control-Allow-Origin", constant("*"))
+                .setHeader("Access-Control-Allow-Origin", header("Origin"))
+                .setHeader("Access-Control-Allow-Methods", constant("GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, CONNECT, PATCH"))
+                .setHeader("Access-Control-Max-Age", constant("3600"))
                 .to("direct:deploy")
                 .group("系统流程").description("部署流程入口").setId("DeployFlow");
 
         // Rest 获取流程信息
         from("rest:get:flow/{id}").setBody(header("id"))
+                .setHeader("Access-Control-Allow-Credentials", constant("true"))
+                .setHeader("Access-Control-Allow-Headers", constant("Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"))
+//                .setHeader("Access-Control-Allow-Origin", constant("*"))
+                .setHeader("Access-Control-Allow-Origin", header("Origin"))
+                .setHeader("Access-Control-Allow-Methods", constant("GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, CONNECT, PATCH"))
+                .setHeader("Access-Control-Max-Age", constant("3600"))
                 .bean("deployService", "getFlow")
                 .marshal().json()
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
                 .group("系统流程").description("获取流程信息").setId("GetFlowInfo");
 
         // Rest 列出流程信息
+//        rest().get("/flows").route()
         from("rest:get:flows")
+                .setHeader("Access-Control-Allow-Credentials", constant("true"))
+                .setHeader("Access-Control-Allow-Headers", constant("Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"))
+//                .setHeader("Access-Control-Allow-Origin", constant("*"))
+                .setHeader("Access-Control-Allow-Origin", header("Origin"))
+                .setHeader("Access-Control-Allow-Methods", constant("GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, CONNECT, PATCH"))
+                .setHeader("Access-Control-Max-Age", constant("3600"))
                 .bean("deployService", "listFlows")
                 .marshal().json()
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
@@ -87,6 +104,12 @@ public class RestRoute extends RouteBuilder {
 
         // Rest 删除流程入口
         from("rest:delete:flow/{id}").setBody(header("id"))
+                .setHeader("Access-Control-Allow-Credentials", constant("true"))
+                .setHeader("Access-Control-Allow-Headers", constant("Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"))
+//                .setHeader("Access-Control-Allow-Origin", constant("*"))
+                .setHeader("Access-Control-Allow-Origin", header("Origin"))
+                .setHeader("Access-Control-Allow-Methods", constant("GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, CONNECT, PATCH"))
+                .setHeader("Access-Control-Max-Age", constant("3600"))
                 .log("---remove-- \n${body}")
                 .bean("deployService", "remove")
                 .group("系统流程").description("删除流程入口").setId("RemoveFlow");

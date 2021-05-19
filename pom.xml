@@ -55,9 +55,19 @@
             <artifactId>camel-bean-starter</artifactId>
             <version>${camel.version}</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.camel</groupId>-->
+<!--            <artifactId>camel-jetty</artifactId>-->
+<!--            <version>${camel.version}</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.apache.camel</groupId>
-            <artifactId>camel-jetty</artifactId>
+            <artifactId>camel-netty-http</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-jackson-starter</artifactId>
             <version>${camel.version}</version>
         </dependency>
         <dependency>

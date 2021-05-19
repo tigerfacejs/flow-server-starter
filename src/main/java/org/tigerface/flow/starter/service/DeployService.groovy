@@ -1,11 +1,11 @@
 package org.tigerface.flow.starter.service
 
+import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Route;
 import org.apache.camel.impl.DefaultCamelContext
-import org.eclipse.jetty.util.ajax.JSON;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired
 import org.tigerface.flow.starter.domain.Flow;
 
 
@@ -59,12 +59,13 @@ public class DeployService {
             def groupName = route.getGroup();
             Map group = info.get(groupName);
             if (group == null) {
-                group = ['title': groupName, 'key': groupName, 'children': new ArrayList()];
+                group = ['title': groupName, 'key': groupName, 'children': new ArrayList(), 'isLeaf':false];
                 info.put(groupName, group);
             }
             group.get('children').add([
                     'key'  : route.getId(),
-                    'title': getRouteInfo(route).get("json").get("desc")
+                    'title': getRouteInfo(route).get("json").get("desc"),
+                    'isLeaf': true
             ]);
         }
         return info.values();
@@ -73,16 +74,20 @@ public class DeployService {
     private Map getRouteInfo(Route route) {
         def desc = ['desc': route.getDescription()];
         try {
-            desc = JSON.parse(route.getDescription())
-        } catch (IllegalStateException e) {
+            if (desc.desc.startsWith("{")) {
+                desc = new JsonSlurper().parseText(desc.desc)
+            }
+        } catch (RuntimeException e) {
             // ignore
+            e.printStackTrace();
         }
         return [
                 'id'          : route.getId(),
                 'group'       : route.getGroup(),
                 'uri'         : URLDecoder.decode(route.getEndpoint().getEndpointUri(), "UTF-8"),
                 'uptimeMillis': route.getUptimeMillis(),
-                'json'        : desc];
+                'json'        : desc
+        ];
     }
 
     Object getFlow(String id) throws UnsupportedEncodingException {
