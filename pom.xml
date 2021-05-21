@@ -55,26 +55,26 @@
             <artifactId>camel-bean-starter</artifactId>
             <version>${camel.version}</version>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.camel</groupId>-->
-        <!--            <artifactId>camel-jetty</artifactId>-->
-        <!--            <version>${camel.version}</version>-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-netty-http-starter</artifactId>
+            <artifactId>camel-jetty-starter</artifactId>
             <version>${camel.version}</version>
         </dependency>
 <!--        <dependency>-->
-<!--            <groupId>org.apache.camel</groupId>-->
-<!--            <artifactId>camel-http</artifactId>-->
+<!--            <groupId>org.apache.camel.springboot</groupId>-->
+<!--            <artifactId>camel-netty-http-starter</artifactId>-->
 <!--            <version>${camel.version}</version>-->
 <!--        </dependency>-->
-        <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-servlet-starter</artifactId>
-            <version>${camel.version}</version>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>org.apache.camel</groupId>-->
+        <!--            <artifactId>camel-http</artifactId>-->
+        <!--            <version>${camel.version}</version>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.apache.camel.springboot</groupId>-->
+        <!--            <artifactId>camel-servlet-starter</artifactId>-->
+        <!--            <version>${camel.version}</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-mongodb</artifactId>

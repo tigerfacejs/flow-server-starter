@@ -53,7 +53,8 @@ public class RestRoute extends RouteBuilder {
         camelContext.setStreamCaching(true);
 
         restConfiguration()
-                .component("servlet")
+                .component("jetty")
+                .port(8086)
                 .enableCORS(true)
                 .corsAllowCredentials(true);
 //                .bindingMode(RestBindingMode.off)
