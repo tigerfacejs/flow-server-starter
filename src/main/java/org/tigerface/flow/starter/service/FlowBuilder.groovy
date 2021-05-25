@@ -111,6 +111,9 @@ class FlowBuilder {
                             rd.setHeader("Access-Control-Allow-Methods", constant("GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, CONNECT, PATCH"));
                             rd.setHeader("Access-Control-Max-Age", constant("3600"));
                             break;
+                        case "claimCheck":
+                            rd.claimCheck(node.props.operation, node.props.key);
+                            break;
                         case "transform":
                             rd.transform(exp(node.props));
                             break;
