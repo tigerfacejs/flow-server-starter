@@ -28,9 +28,10 @@ public class DeployService {
         log.info("开始部署");
         Flow flow = flowBuilder.parse(flowJson);
         flow.setJson(flowJson);
+        log.info("流程细节", flow);
 
         // 简化部署，只检查ID，直接部署
-        remove(flow.getId());
+        remove(flow.getKey());
         camelContext.addRoutes(flowBuilder.build(flow));
 
         return true;
@@ -74,7 +75,7 @@ public class DeployService {
     private Map getRouteInfo(Route route) {
         def desc = ['desc': route.getDescription()];
         try {
-            if (desc.desc.startsWith("{")) {
+            if (desc.desc!=null && desc.desc.startsWith("{")) {
                 desc = new JsonSlurper().parseText(desc.desc)
             }
         } catch (RuntimeException e) {

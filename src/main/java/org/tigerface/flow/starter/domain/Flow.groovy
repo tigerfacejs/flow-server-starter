@@ -5,7 +5,7 @@ import org.tigerface.flow.starter.domain.FlowStatus;
 
 @Data
 public class Flow {
-    String id;
+    String key;
     String json;
     String name;
     String group;
