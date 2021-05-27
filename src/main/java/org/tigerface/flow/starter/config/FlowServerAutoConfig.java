@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.tigerface.flow.starter.route.RestRoute;
 import org.tigerface.flow.starter.service.DeployService;
 import org.tigerface.flow.starter.service.FlowBuilder;
+import org.tigerface.flow.starter.service.PluginManager;
 
 @Configuration
 //@ConditionalOnClass(RestRoute.class)
@@ -16,6 +17,7 @@ public class FlowServerAutoConfig {
 
     @Bean
     public FlowBuilder flowBuilder() {
+        PluginManager.init();
         return new FlowBuilder();
     }
 
