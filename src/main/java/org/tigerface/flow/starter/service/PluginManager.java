@@ -20,6 +20,7 @@ public class PluginManager {
             FlowNodeFactory.register("log", LogNode.class);
             FlowNodeFactory.register("marshal", MarshalNode.class);
             FlowNodeFactory.register("unmarshal", UnMarshalNode.class);
+            FlowNodeFactory.register("enrich", EnrichNode.class);
 
             FlowNodeFactory.register("rest", RestFromNode.class);
             FlowNodeFactory.register("cors", CorsNode.class);
