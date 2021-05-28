@@ -21,13 +21,8 @@ public class FilterNode implements IFlowNode {
     public <T extends ProcessorDefinition<T>>T createAndAppend(Map<String, Object> node, T rd) {
         Map<String, Object> props = (Map<String, Object>) node.get("props");
 
-        Expression exp = Exp.create(props);
-        rd.filter(new Predicate() {
-            @Override
-            public boolean matches(Exchange exchange) {
-                return exp.evaluate(exchange, Boolean.class);
-            }
-        });
+        Predicate exp = PredicateExp.create(props);
+        rd.filter(exp);
 
         log.info("创建 filter 节点");
 
