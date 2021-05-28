@@ -10,6 +10,7 @@ import org.apache.camel.model.ChoiceDefinition;
 import org.apache.camel.model.ProcessorDefinition;
 import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.model.WireTapDefinition;
+import org.apache.camel.model.language.ExpressionDefinition;
 import org.tigerface.flow.starter.service.FlowNodeFactory;
 
 import java.util.List;
@@ -32,14 +33,9 @@ public class ChoiceNode implements IFlowNode {
         ChoiceDefinition cd = rd.choice();
         if (whens != null) {
             for (Map when : whens) {
-                Expression exp = Exp.create(when);
+                Predicate exp = PredicateExp.create(when);
                 List<Map> nodes = (List<Map>) when.get("nodes");
-                ChoiceDefinition wd = cd.when(new Predicate() {
-                    @Override
-                    public boolean matches(Exchange exchange) {
-                        return exp.evaluate(exchange, Boolean.class);
-                    }
-                });
+                ChoiceDefinition wd = cd.when(exp);
 
                 for (Map sub : nodes) {
                     FlowNodeFactory factory = new FlowNodeFactory(builder);

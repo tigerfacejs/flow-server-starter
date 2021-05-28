@@ -4,46 +4,45 @@ import org.apache.camel.Expression;
 import org.apache.camel.builder.ExpressionBuilder;
 import org.apache.camel.builder.SimpleBuilder;
 import org.apache.camel.language.spel.SpelExpression;
-import org.apache.camel.model.language.JsonPathExpression;
-import org.apache.camel.model.language.XPathExpression;
+import org.apache.camel.model.language.*;
 
 import java.util.Map;
 
-public class Exp {
-    static Expression create(Map<String, Object> props) {
+public class PredicateExp {
+    static org.apache.camel.Predicate create(Map<String, Object> props) {
         String lang = (String)props.get("lang");
         String script = (String)props.get("script");
 
         if(lang.equalsIgnoreCase("constant")) {
-            return ExpressionBuilder.constantExpression(script);
+            return new ConstantExpression(script);
         }
 
         else if(lang.equalsIgnoreCase("simple")) {
-            return ExpressionBuilder.simpleExpression(script);
+            return new SimpleExpression(script);
         }
 
         else if(lang.equalsIgnoreCase("spel")) {
-            return ExpressionBuilder.languageExpression("spel", script);
+            return SpelExpression.spel(script);
         }
 
         else if(lang.equalsIgnoreCase("jsonpath")) {
-            return ExpressionBuilder.languageExpression("jsonpath", script);
+            return new JsonPathExpression(script);
         }
 
         else if(lang.equalsIgnoreCase("xpath")) {
-            return ExpressionBuilder.languageExpression("script", script);
+            return new XPathExpression(script);
         }
 
         else if(lang.equalsIgnoreCase("groovy")) {
-            return ExpressionBuilder.languageExpression("groovy", script);
+            return new GroovyExpression(script);
         }
 
         else if(lang.equalsIgnoreCase("method")) {
-            return ExpressionBuilder.beanExpression(script);
+            return new MethodCallExpression(script);
         }
 
         else if(lang.equalsIgnoreCase("header")) {
-            return ExpressionBuilder.headerExpression(script);
+            return new HeaderExpression(script);
         }
 
         else throw new RuntimeException("不支持的表达式语言：${props.lang}");
