@@ -34,7 +34,7 @@ public class DeployService {
         remove(flow.getKey());
         camelContext.addRoutes(flowBuilder.build(flow));
 
-        return [message:'部署完毕'];;
+        return [message:'部署完毕'];
     }
 
     /**
