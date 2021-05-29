@@ -97,11 +97,13 @@ public class RestRoute extends RouteBuilder {
 
         // Rest 删除流程入口
         rest().delete("flow/{id}").route()
+                .group("系统流程").description("删除流程入口").id("RemoveFlow")
 //        from("rest:delete:flow/{id}")
                 .setBody(header("id"))
                 .log("---remove-- \n${body}")
                 .bean("deployService", "remove")
-                .group("系统流程").description("删除流程入口").setId("RemoveFlow");
+                .marshal().json();
+
 
         // 文件部署流程
         from("file://" + path + "?charset=utf-8&recursive=true&delete=true&include=.*\\.json$&exclude=package.json")
@@ -111,9 +113,11 @@ public class RestRoute extends RouteBuilder {
 
         // 部署主流程
         from("direct:deploy")
+                .group("系统流程").description("部署主流程").id("MainDeployFlow")
                 .log("---deploy-- \n${body}")
                 .bean("deployService", "deploy")
-                .group("系统流程").description("部署主流程").setId("MainDeployFlow");
+                .marshal().json();
+
 
 //        // mq 发布测试
 //        from("rest:post:mq")

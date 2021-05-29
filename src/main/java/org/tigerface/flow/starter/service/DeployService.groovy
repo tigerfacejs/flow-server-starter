@@ -24,7 +24,7 @@ public class DeployService {
      * @return
      * @throws Exception
      */
-    boolean deploy(String flowJson) throws Exception {
+    Map deploy(String flowJson) throws Exception {
         log.info("开始部署");
         Flow flow = flowBuilder.parse(flowJson);
         flow.setJson(flowJson);
@@ -34,7 +34,7 @@ public class DeployService {
         remove(flow.getKey());
         camelContext.addRoutes(flowBuilder.build(flow));
 
-        return true;
+        return [message:'部署完毕'];;
     }
 
     /**
@@ -44,13 +44,15 @@ public class DeployService {
      * @return
      * @throws Exception
      */
-    boolean remove(String id) throws Exception {
+    Map remove(String id) throws Exception {
         if (camelContext.getRoute(id) != null) {
             log.info("删除已存在的流程 {}", id);
             ((DefaultCamelContext) camelContext).stopRoute(id);
-            return camelContext.removeRoute(id);
+            if(camelContext.removeRoute(id)) {
+                return [message:'删除成功'];
+            }
         }
-        return false;
+        return [message:'删除失败'];
     }
 
     Object listFlows() {
