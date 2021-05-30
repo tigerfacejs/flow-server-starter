@@ -33,25 +33,28 @@ public class ChoiceNode implements IFlowNode {
         ChoiceDefinition cd = rd.choice();
         if (whens != null) {
             for (Map when : whens) {
-                Predicate exp = PredicateExp.create(when);
                 List<Map> nodes = (List<Map>) when.get("nodes");
-                ChoiceDefinition wd = cd.when(exp);
+                if(nodes.isEmpty()) {
+                    Predicate exp = PredicateExp.create(when);
+                    ChoiceDefinition wd = cd.when(exp);
 
-                for (Map sub : nodes) {
-                    FlowNodeFactory factory = new FlowNodeFactory(builder);
-                    wd = factory.createAndAppend(sub, wd);
+                    for (Map sub : nodes) {
+                        FlowNodeFactory factory = new FlowNodeFactory(builder);
+                        wd = factory.createAndAppend(sub, wd);
+                    }
                 }
             }
         }
 
         if(otherwise!=null) {
             List<Map> nodes = (List<Map>) otherwise.get("nodes");
+            if(!nodes.isEmpty()) {
+                ChoiceDefinition wd = cd.otherwise();
 
-            ChoiceDefinition wd = cd.otherwise();
-
-            for (Map sub : nodes) {
-                FlowNodeFactory factory = new FlowNodeFactory(builder);
-                wd = factory.createAndAppend(sub, wd);
+                for (Map sub : nodes) {
+                    FlowNodeFactory factory = new FlowNodeFactory(builder);
+                    wd = factory.createAndAppend(sub, wd);
+                }
             }
         }
 
