@@ -18,44 +18,6 @@ import java.text.SimpleDateFormat
  * 流解析器
  */
 
-/* Flow Example
-{
-  "id": "flow_id_xxx",
-  "name": "demo",
-  "desc": "测试流程",
-  "version": "1.2.3",
-  "status": "testing",
-  "nodes": [
-    {
-      "id": "node_id_xxx",
-      "eip": "from",
-      "props": {
-        "comp": "rest",
-        "method": "get",
-        "path": "demo/{who}"
-      }
-    },
-    {
-      "id": "node_id_xxx",
-      "eip": "transform",
-      "props": {
-        "lang": "groovy",
-        "script": "import groovy.json.JsonOutput;\n return JsonOutput.toJson([msg:\"${headers.who}，你好！\"])"
-      }
-    },
-    {
-      "id": "node_id_xxx",
-      "eip": "setHeader",
-      "props": {
-        "header": "Content-Type",
-        "lang": "constant",
-        "script": "application/json; charset=UTF-8"
-      }
-    }
-  ]
-}
-*/
-
 @Slf4j
 class FlowBuilder implements ApplicationContextAware {
 

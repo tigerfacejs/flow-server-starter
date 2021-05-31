@@ -18,7 +18,7 @@ public class Flow {
         if (nodes.size() > 0) {
             def entry = nodes.get(0);
             def type = entry.type ? entry.type : entry.eip;
-            if (type == "from") {
+            if (type == "from" || type == "rest") {
                 return type;
             }
         }
