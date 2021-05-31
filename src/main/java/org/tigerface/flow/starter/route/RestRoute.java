@@ -95,6 +95,13 @@ public class RestRoute extends RouteBuilder {
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
                 .group("系统流程").description("列出全部流程").setId("ListFlows");
 
+        // Rest 列出流程信息
+        rest().get("/subflows").route()
+                .bean("deployService", "listDirectFlows")
+                .marshal().json()
+                .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
+                .group("系统流程").description("列出全部直接流程").setId("ListSubFlows");
+
         // Rest 删除流程入口
         rest().delete("flow/{id}").route()
                 .group("系统流程").description("删除流程入口").id("RemoveFlow")

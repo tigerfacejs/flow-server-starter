@@ -34,7 +34,7 @@ public class ChoiceNode implements IFlowNode {
         if (whens != null) {
             for (Map when : whens) {
                 List<Map> nodes = (List<Map>) when.get("nodes");
-                if(nodes.isEmpty()) {
+                if(!nodes.isEmpty()) {
                     Predicate exp = PredicateExp.create(when);
                     ChoiceDefinition wd = cd.when(exp);
 
