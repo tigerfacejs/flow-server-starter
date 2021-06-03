@@ -3,14 +3,8 @@ package org.tigerface.flow.starter.route;
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.elasticsearch.ElasticsearchComponent;
-import org.apache.camel.model.dataformat.JsonDataFormat;
-import org.apache.camel.model.rest.RestBindingMode;
-import org.apache.camel.spi.RestConfiguration;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-
-import java.util.Map;
 
 public class RestRoute extends RouteBuilder {
 //    private int port = 8086;
