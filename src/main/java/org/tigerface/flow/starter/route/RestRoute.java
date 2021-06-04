@@ -54,7 +54,7 @@ public class RestRoute extends RouteBuilder {
 //                .bindingMode(RestBindingMode.off)
 
         // 基础流程，系统基本状态
-        rest().get("/who").route()
+        rest().get("/").route()
 //        from("rest:get:who")
                 .transform().simple("这是一个 Flow Server，你可以通过 POST ../deploy 来部署一个流程。")
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
