@@ -21,7 +21,6 @@ public class AggregateNode implements IFlowNode {
     @Override
     public <T extends ProcessorDefinition<T>> T createAndAppend(Map<String, Object> node, T rd) {
         Map<String, Object> props = (Map<String, Object>) node.get("props");
-        String uri = (String) props.get("uri");
         String aggregationStrategy = (String) props.get("aggregationStrategy");
 
         Expression correlationExp = Exp.create((Map) props.get("correlation"));
