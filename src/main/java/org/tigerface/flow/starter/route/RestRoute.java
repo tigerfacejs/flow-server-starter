@@ -3,6 +3,7 @@ package org.tigerface.flow.starter.route;
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.elasticsearch.ElasticsearchComponent;
+import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -50,8 +51,9 @@ public class RestRoute extends RouteBuilder {
                 .component("jetty")
                 .port(8086)
                 .enableCORS(true)
-                .corsAllowCredentials(true);
-//                .bindingMode(RestBindingMode.off)
+                .corsAllowCredentials(true)
+                .bindingMode(RestBindingMode.off);
+
 
         // 基础流程，系统基本状态
         rest().get("/").route()

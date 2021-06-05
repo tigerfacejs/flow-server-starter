@@ -24,6 +24,10 @@ public class PluginManager {
             FlowNodeFactory.register("choice", ChoiceNode.class);
             FlowNodeFactory.register("redis", SpringRedisNode.class);
             FlowNodeFactory.register("callSubflow", CallSubflowNode.class);
+            FlowNodeFactory.register("Aggregate", AggregateNode.class);
+            FlowNodeFactory.register("Split", SplitNode.class);
+            FlowNodeFactory.register("Header", HeaderNode.class);
+            FlowNodeFactory.register("Property", PropertyNode.class);
 
             FlowNodeFactory.register("rest", RestFromNode.class);
             FlowNodeFactory.register("cors", CorsNode.class);
