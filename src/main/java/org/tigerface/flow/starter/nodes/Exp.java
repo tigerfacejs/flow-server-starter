@@ -46,6 +46,10 @@ public class Exp {
             return ExpressionBuilder.headerExpression(script);
         }
 
+        else if(lang.equalsIgnoreCase("exchangeProperty")) {
+            return ExpressionBuilder.exchangePropertyExpression(script);
+        }
+
         else throw new RuntimeException("不支持的表达式语言：${props.lang}");
     }
 }
