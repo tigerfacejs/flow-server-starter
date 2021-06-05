@@ -2,7 +2,6 @@ package org.tigerface.flow.starter.nodes;
 
 import groovy.lang.GroovyClassLoader;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.ProcessorDefinition;
@@ -28,12 +27,14 @@ public class ProcessNode implements IFlowNode {
             Class processorClazz = groovyClassLoader.parseClass(script);
 
             try {
-                Object aggregator = processorClazz.newInstance();
-                rd.process((Processor) aggregator);
+                Object processor = processorClazz.newInstance();
+                rd.process((Processor) processor);
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new RuntimeException("解析动态 Processor 脚本失败");
             }
+        } else {
+            throw new RuntimeException("Process 脚本不能为空");
         }
         log.info("创建 process 节点");
 
