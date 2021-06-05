@@ -11,6 +11,8 @@ public class PluginManager {
             FlowNodeFactory.register("bean", BeanNode.class);
             FlowNodeFactory.register("transform", TransformNode.class);
             FlowNodeFactory.register("to", ToNode.class);
+            FlowNodeFactory.register("header", HeaderNode.class);
+            FlowNodeFactory.register("property", PropertyNode.class);
             FlowNodeFactory.register("setBody", SetBodyNode.class);
             FlowNodeFactory.register("setHeader", SetHeaderNode.class);
             FlowNodeFactory.register("script", ScriptNode.class);
@@ -26,8 +28,6 @@ public class PluginManager {
             FlowNodeFactory.register("callSubflow", CallSubflowNode.class);
             FlowNodeFactory.register("Aggregate", AggregateNode.class);
             FlowNodeFactory.register("Split", SplitNode.class);
-            FlowNodeFactory.register("Header", HeaderNode.class);
-            FlowNodeFactory.register("Property", PropertyNode.class);
 
             FlowNodeFactory.register("rest", RestFromNode.class);
             FlowNodeFactory.register("cors", CorsNode.class);
