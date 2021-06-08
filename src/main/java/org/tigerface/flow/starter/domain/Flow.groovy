@@ -18,9 +18,9 @@ public class Flow {
         if (nodes.size() > 0) {
             def entry = nodes.get(0);
             def type = entry.type ? entry.type : entry.eip;
-            if (type == "from" || type == "rest") {
+//            if (type == "from" || type == "rest" || type == "singleUpload") {
                 return type;
-            }
+//            }
         }
         throw new RuntimeException("无效的 entry")
     }

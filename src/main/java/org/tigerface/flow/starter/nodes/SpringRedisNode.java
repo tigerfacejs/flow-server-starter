@@ -24,12 +24,22 @@ public class SpringRedisNode implements IFlowNode {
         String command = (String) props.get("command");
         Map key = (Map) props.get("key");
         Map value = (Map) props.get("value");
+        Map expire = (Map) props.get("expire");
+
         String redisTemplate = (String) props.get("redisTemplate");
 
         rd.setHeader("CamelRedis.Key", Exp.create(key));
-        if (command.equalsIgnoreCase("SET"))
+        if (command.equalsIgnoreCase("SET")) {
             rd.setHeader("CamelRedis.Value", Exp.create(value));
-        rd.to("spring-redis:localhost:6379?redisTemplate=#" + redisTemplate + "&command=" + command);
+            rd.to("spring-redis:localhost:6379?redisTemplate=#" + redisTemplate + "&command=" + command);
+            if(expire.get("script")!=null && ((String)expire.get("script")).length()>0) {
+                rd.setHeader("CamelRedis.Timeout", Exp.create(expire));
+                rd.to("spring-redis:localhost:6379?redisTemplate=#" + redisTemplate + "&command=EXPIRE");
+            }
+        } else {
+            // GET or DEL
+            rd.to("spring-redis:localhost:6379?redisTemplate=#" + redisTemplate + "&command=" + command);
+        }
 
         log.info("读写 redis ");
         return rd;
