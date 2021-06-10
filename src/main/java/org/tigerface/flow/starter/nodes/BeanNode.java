@@ -8,17 +8,12 @@ import org.apache.camel.model.RouteDefinition;
 import java.util.Map;
 
 @Slf4j
-public class BeanNode implements IFlowNode {
-    RouteBuilder builder;
-
-    public BeanNode(RouteBuilder builder) {
-        this.builder = builder;
-    }
+public class BeanNode extends FlowNode {
 
     @Override
-    public <T extends ProcessorDefinition<T>>T createAndAppend(Map<String, Object> node, T rd) {
+    public <T extends ProcessorDefinition<T>> T createAndAppend(Map<String, Object> node, T rd) {
         Map<String, Object> props = (Map<String, Object>) node.get("props");
-        rd.bean(props.get("bean"), (String)props.get("method"));
+        rd.bean(props.get("bean"), (String) props.get("method"));
         log.info("创建 bean 节点");
         return (T) rd;
     }

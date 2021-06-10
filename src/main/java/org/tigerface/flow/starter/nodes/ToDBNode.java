@@ -7,12 +7,7 @@ import org.apache.camel.model.ProcessorDefinition;
 import java.util.Map;
 
 @Slf4j
-public class ToDBNode implements IFlowNode {
-    RouteBuilder builder;
-
-    public ToDBNode(RouteBuilder builder) {
-        this.builder = builder;
-    }
+public class ToDBNode extends FlowNode {
 
     @Override
     public <T extends ProcessorDefinition<T>> T createAndAppend(Map<String, Object> node, T rd) {

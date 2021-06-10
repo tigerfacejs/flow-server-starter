@@ -10,12 +10,7 @@ import static org.apache.camel.language.constant.ConstantLanguage.constant;
 import static org.apache.camel.language.header.HeaderLanguage.header;
 
 @Slf4j
-public class SpringRedisNode implements IFlowNode {
-    RouteBuilder builder;
-
-    public SpringRedisNode(RouteBuilder builder) {
-        this.builder = builder;
-    }
+public class SpringRedisNode extends FlowNode {
 
     @Override
     public <T extends ProcessorDefinition<T>> T createAndAppend(Map<String, Object> node, T rd) {

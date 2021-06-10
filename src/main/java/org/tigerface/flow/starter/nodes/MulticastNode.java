@@ -20,12 +20,7 @@ import java.util.Map;
     }
 */
 @Slf4j
-public class MulticastNode implements IFlowNode {
-    RouteBuilder builder;
-
-    public MulticastNode(RouteBuilder builder) {
-        this.builder = builder;
-    }
+public class MulticastNode extends FlowNode {
 
     @Override
     public <T extends ProcessorDefinition<T>> T createAndAppend(Map<String, Object> node, T rd) {

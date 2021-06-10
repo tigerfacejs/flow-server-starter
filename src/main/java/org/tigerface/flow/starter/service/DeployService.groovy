@@ -3,7 +3,8 @@ package org.tigerface.flow.starter.service
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j;
 import org.apache.camel.CamelContext;
-import org.apache.camel.Route;
+import org.apache.camel.Route
+import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.tigerface.flow.starter.domain.Flow;
@@ -25,15 +26,24 @@ public class DeployService {
      * @throws Exception
      */
     Map deploy(String flowJson) throws Exception {
-        log.info("开始部署");
+        log.info("------ 准备部署流程 ------");
+        log.info("解析...");
         Flow flow = flowBuilder.parse(flowJson);
         flow.setJson(flowJson);
-        log.info("流程细节", flow);
+        String uri = flow.getEntryUri();
+        log.info("入口 uri = " + uri);
 
-        // 简化部署，只检查ID，直接部署
-        remove(flow.getKey());
-        camelContext.addRoutes(flowBuilder.build(flow));
+        String id = flow.getRouteId();
+        log.info("生成 id = " + id);
 
+        def ret = _remove(id);
+        log.info("尝试移除现有流程: " + ret)
+
+        RouteBuilder routeBuilder = flowBuilder.build(flow);
+
+        log.info("部署...");
+        camelContext.addRoutes(routeBuilder);
+        log.info("------ end ------\n");
         return [message: '部署完毕'];
     }
 
@@ -45,14 +55,16 @@ public class DeployService {
      * @throws Exception
      */
     Map remove(String id) throws Exception {
+        return _remove(id) ? [message: '删除成功'] : [message: '删除失败'];
+    }
+
+    boolean _remove(String id) throws Exception {
         if (camelContext.getRoute(id) != null) {
-            log.info("删除已存在的流程 {}", id);
+            log.info("流程已存在：{}", id);
             ((DefaultCamelContext) camelContext).stopRoute(id);
-            if (camelContext.removeRoute(id)) {
-                return [message: '删除成功'];
-            }
+            return camelContext.removeRoute(id);
         }
-        return [message: '删除失败'];
+        return true;
     }
 
     Object listFlows() {

@@ -1,6 +1,8 @@
 package org.tigerface.flow.starter.nodes;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.ProcessorDefinition;
 import org.apache.camel.model.RouteDefinition;
@@ -12,19 +14,21 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class RestFromNode implements IFlowNode {
-    RouteBuilder builder;
+public class RestFromNode extends EntryNode {
 
-    public RestFromNode(RouteBuilder builder) {
-        this.builder = builder;
+    @Override
+    public String getEntryUri(Map node) {
+        Map<String, Object> props = (Map<String, Object>) node.get("props");
+        String uri = "rest:" + (String) props.get("method") + ":" + (String) props.get("path");
+        return uri;
     }
 
     @Override
-    public <T extends ProcessorDefinition<T>> T createAndAppend(Map<String, Object> node, T rd) {
+    public <T extends ProcessorDefinition<T>> T createAndAppend(Map<String, Object> node) {
         Flow flow = (Flow) node.get("flow");
-        Map<String, Object> props = (Map<String, Object>) node.get("props");
-        String uri = "rest:" + (String) props.get("method") + ":" + (String) props.get("path");
+        String uri = this.getEntryUri(node);
 
+        Map<String, Object> props = (Map<String, Object>) node.get("props");
         List<Map> params = (List<Map>) props.get("params");
         StringBuffer buf = new StringBuffer();
         if (params != null && !params.isEmpty()) {
@@ -49,8 +53,15 @@ public class RestFromNode implements IFlowNode {
 
         ProcessorDefinition newRouteDef = this.builder.from(uri);
 
-        if (flow.getKey() != null) newRouteDef.routeId(flow.getKey());
-        else throw new RuntimeException("流程定义缺省关键属性：key");
+        newRouteDef.process(new Processor() {
+            @Override
+            public void process(Exchange exchange) throws Exception {
+                System.out.println("LOG >>> routeUri = "+exchange.getFromEndpoint().getEndpointUri()+", exchangeId = " + exchange.getExchangeId());
+            }
+        });
+
+//        if (flow.getKey() != null) newRouteDef.routeId(flow.getKey());
+//        else throw new RuntimeException("流程定义缺省关键属性：key");
 
         if (flow.getGroup() != null)
             newRouteDef.routeGroup(flow.getGroup());
@@ -60,7 +71,7 @@ public class RestFromNode implements IFlowNode {
             newRouteDef.routeDescription(flow.getJson());
         else throw new RuntimeException("流程定义缺省关键属性：json");
 
-        log.info("识别 rest 节点 " + uri);
+        log.info("创建 rest 节点 " + uri);
         return (T) newRouteDef;
     }
 }

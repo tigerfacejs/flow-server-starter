@@ -10,12 +10,7 @@ import org.apache.camel.model.ProcessorDefinition;
 import java.util.Map;
 
 @Slf4j
-public class FilterNode implements IFlowNode {
-    RouteBuilder builder;
-
-    public FilterNode(RouteBuilder builder) {
-        this.builder = builder;
-    }
+public class FilterNode extends FlowNode {
 
     @Override
     public <T extends ProcessorDefinition<T>>T createAndAppend(Map<String, Object> node, T rd) {

@@ -35,7 +35,7 @@ class FlowBuilder implements ApplicationContextAware {
     }
 
     RouteBuilder build(Flow flow) {
-        log.info("创建流程 \n{}", flow);
+        log.debug("创建流程 \n{}", flow);
         if (flow.nodes.size() < 1) throw new Exception("空流程")
         def builder = new RouteBuilder() {
             @Override
@@ -44,9 +44,11 @@ class FlowBuilder implements ApplicationContextAware {
                 RouteDefinition rd;
                 for (def node : flow.nodes) {
                     node.flow = flow;
-                    node.type = node.type ? node.type : node.eip;
+                    // 不再兼容 node.eip，改用 node.type
+//                    node.type = node.type ? node.type : node.eip;
                     rd = factory.createAndAppend(node, rd);
                 }
+                rd.routeId(flow.getRouteId());
             }
         }
         return builder;
@@ -61,9 +63,16 @@ class FlowBuilder implements ApplicationContextAware {
                 .newExchange(new Processor() {
                     @Override
                     void process(Exchange exchange) throws Exception {
+                        def headers = exchange.getIn().getHeaders();
                         def body = exchange.getIn().getBody();
-                        def bodyJson = (body instanceof String || body instanceof byte[]) ? body : JsonOutput.toJson(body);
-                        exchange.getIn().setBody(['flowId': flow.getKey(), 'requestTime': new SimpleDateFormat('yyyy-MM-dd hh:mm:ss.S').format(now), 'data': bodyJson]);
+//                        def bodyJson = (body instanceof String || body instanceof byte[]) ? body : JsonOutput.toJson(body);
+                        def data = [
+                                'flowId'     : flow.getKey(),
+                                'requestTime': new SimpleDateFormat('yyyy-MM-dd hh:mm:ss.S').format(now),
+                                'headers'    : headers,
+                                'body'       : body
+                        ];
+                        exchange.getIn().setBody(JsonOutput.toJson(body));
                         exchange.getIn().setHeader("ESIndexName", "flowlog");
                     }
                 })

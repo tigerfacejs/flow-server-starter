@@ -20,24 +20,34 @@ import java.util.regex.Pattern;
 import static org.apache.camel.util.function.Suppliers.constant;
 
 @Slf4j
-public class SingleUploadNode implements IFlowNode {
-    RouteBuilder builder;
+public class SingleUploadNode extends EntryNode {
 
-    public SingleUploadNode(RouteBuilder builder) {
-        this.builder = builder;
+    @Override
+    public String getEntryUri(Map node) {
+        Map<String, Object> props = (Map<String, Object>) node.get("props");
+        String path = props.get("path") != null ? (String) props.get("path") : "/upload";
+        if (!path.startsWith("/")) path = "/" + path;
+        String uri = "jetty:http://0.0.0.0:8086" + path + "?httpMethodRestrict=post";
+        return uri;
     }
 
     @Override
-    public <T extends ProcessorDefinition<T>> T createAndAppend(Map<String, Object> node, T rd) {
+    public <T extends ProcessorDefinition<T>> T createAndAppend(Map<String, Object> node) {
         Flow flow = (Flow) node.get("flow");
-        Map<String, Object> props = (Map<String, Object>) node.get("props");
-        String path = props.get("path") != null ? (String) props.get("path") : "/upload";
-        String field = props.get("field") != null ? (String) props.get("field") : "file";
+        String uri = this.getEntryUri(node);
 
-        if (!path.startsWith("/")) path = "/" + path;
-        String uri = "jetty:http://0.0.0.0:8086" + path + "?httpMethodRestrict=post";
+        Map<String, Object> props = (Map<String, Object>) node.get("props");
 
         ProcessorDefinition newRouteDef = this.builder.from(uri);
+
+        newRouteDef.process(new Processor() {
+            @Override
+            public void process(Exchange exchange) throws Exception {
+                System.out.println("LOG >>> routeUri = "+exchange.getFromEndpoint().getEndpointUri()+", exchangeId = " + exchange.getExchangeId());
+            }
+        });
+
+        String field = props.get("field") != null ? (String) props.get("field") : "file";
         newRouteDef.process(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
@@ -69,8 +79,8 @@ public class SingleUploadNode implements IFlowNode {
             }
         });
 
-        if (flow.getKey() != null) newRouteDef.routeId(flow.getKey());
-        else throw new RuntimeException("流程定义缺省关键属性：key");
+//        if (flow.getKey() != null) newRouteDef.routeId(flow.getKey());
+//        else throw new RuntimeException("流程定义缺省关键属性：key");
 
         if (flow.getGroup() != null)
             newRouteDef.routeGroup(flow.getGroup());
@@ -80,7 +90,7 @@ public class SingleUploadNode implements IFlowNode {
             newRouteDef.routeDescription(flow.getJson());
         else throw new RuntimeException("流程定义缺省关键属性：json");
 
-        log.info("识别 single upload 节点 ");
+        log.info("创建 single upload 节点 ");
         return (T) newRouteDef;
     }
 }

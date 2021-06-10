@@ -15,12 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class LoopNode implements IFlowNode {
-    RouteBuilder builder;
-
-    public LoopNode(RouteBuilder builder) {
-        this.builder = builder;
-    }
+public class LoopNode extends FlowNode {
 
     @Override
     public <T extends ProcessorDefinition<T>> T createAndAppend(Map<String, Object> node, T rd) {
@@ -37,7 +32,7 @@ public class LoopNode implements IFlowNode {
         } else if ("doWhile".equalsIgnoreCase(type)) {
             Predicate whileExp = PredicateExp.create(loop);
             ld = rd.loopDoWhile(whileExp);
-        } else throw new RuntimeException("不能识别的循环类型 " + type);
+        } else throw new RuntimeException("不能创建的循环类型 " + type);
 
         List<Map> nodes = (List<Map>) loop.get("nodes");
         if (!nodes.isEmpty()) {

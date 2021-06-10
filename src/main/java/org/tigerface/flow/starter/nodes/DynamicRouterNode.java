@@ -11,12 +11,7 @@ import java.util.Map;
 import static org.apache.camel.builder.Builder.method;
 
 @Slf4j
-public class DynamicRouterNode implements IFlowNode {
-    RouteBuilder builder;
-
-    public DynamicRouterNode(RouteBuilder builder) {
-        this.builder = builder;
-    }
+public class DynamicRouterNode extends FlowNode {
 
     @Override
     public <T extends ProcessorDefinition<T>>T createAndAppend(Map<String, Object> node, T rd) {

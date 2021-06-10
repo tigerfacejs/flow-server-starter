@@ -7,12 +7,7 @@ import org.apache.camel.model.ProcessorDefinition;
 import java.util.Map;
 
 @Slf4j
-public class SetHeaderNode implements IFlowNode {
-    RouteBuilder builder;
-
-    public SetHeaderNode(RouteBuilder builder) {
-        this.builder = builder;
-    }
+public class SetHeaderNode extends FlowNode {
 
     @Override
     public <T extends ProcessorDefinition<T>>T createAndAppend(Map<String, Object> node, T rd) {

@@ -8,12 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class HeaderNode implements IFlowNode {
-    RouteBuilder builder;
-
-    public HeaderNode(RouteBuilder builder) {
-        this.builder = builder;
-    }
+public class HeaderNode extends FlowNode {
 
     @Override
     public <T extends ProcessorDefinition<T>>T createAndAppend(Map<String, Object> node, T rd) {
