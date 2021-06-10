@@ -67,19 +67,39 @@ public class DeployService {
         return true;
     }
 
+    private Map createGroups(Map index, String groupNames) {
+        Map exist = index.get(groupNames);
+        if (exist) return exist;
+
+//        Map parent = index;
+//        log.info("createGroup ${groupNames} ${groupNames.split('[.]')}");
+
+        String parentName = '';
+        Map parent = null;
+        for (String currentName : groupNames.split('[.]')) {
+            if (parentName.length() > 0) parentName += '.'
+            parentName += currentName;
+            Map group = index.get(parentName);
+            if (group == null) {
+                log.info("创建组 ${parentName}")
+                group = ['title': currentName, 'key': currentName, 'children': new ArrayList(), 'isLeaf': false];
+                index.put(parentName, group);
+                if (parent != null) parent.get('children').add(group);
+            }
+            parent = group;
+        }
+
+        return index.get(groupNames);
+    }
+
     Object listFlows() {
         def routes = camelContext.getRoutes();
-        Map<String, Map> info = new HashMap<>();
+        Map<String, Map> index = new HashMap<>();
         for (Route route : routes) {
             Flow flow = getRouteInfo(route).get('flow');
             if (flow != null) {
                 def groupName = route.getGroup() ? route.getGroup() : '缺省分组';
-                Map group = info.get(groupName);
-                if (group == null) {
-                    group = ['title': groupName, 'key': groupName, 'children': new ArrayList(), 'isLeaf': false];
-                    info.put(groupName, group);
-                }
-
+                Map group = createGroups(index, groupName.replaceAll('/', '.'));
                 group.get('children').add([
                         'key'   : route.getId(),
                         'title' : flow.desc,
@@ -87,7 +107,13 @@ public class DeployService {
                 ]);
             }
         }
-        return info.values();
+        List result = new ArrayList();
+        for (String key : index.keySet()) {
+            if (key.indexOf('.') == -1) {
+                result.add(index.get(key));
+            }
+        }
+        return result;
     }
 
     Object listDirectFlows() {
