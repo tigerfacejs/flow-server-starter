@@ -1,6 +1,5 @@
 package org.tigerface.flow.starter.service
 
-import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Route
@@ -67,6 +66,16 @@ public class DeployService {
         return true;
     }
 
+    private treeNodeComparator = new Comparator() {
+        int compare(a, b) {
+            if (a.title > b.title) {
+                return 1;
+            } else if (a.title < b.title) {
+                return -1;
+            } else return 0;
+        }
+    }
+
     private Map createGroups(Map index, String groupNames) {
         Map exist = index.get(groupNames);
         if (exist) return exist;
@@ -84,7 +93,10 @@ public class DeployService {
                 log.info("创建组 ${parentName}")
                 group = ['title': currentName, 'key': currentName, 'children': new ArrayList(), 'isLeaf': false];
                 index.put(parentName, group);
-                if (parent != null) parent.get('children').add(group);
+                if (parent != null) {
+                    parent.get('children').add(group)
+                    Collections.sort(parent.get('children'), treeNodeComparator);
+                };
             }
             parent = group;
         }
@@ -105,6 +117,7 @@ public class DeployService {
                         'title' : flow.desc,
                         'isLeaf': true
                 ]);
+                Collections.sort(group.get('children'), treeNodeComparator);
             }
         }
         List result = new ArrayList();
@@ -113,6 +126,7 @@ public class DeployService {
                 result.add(index.get(key));
             }
         }
+        Collections.sort(result, treeNodeComparator);
         return result;
     }
 
@@ -156,18 +170,18 @@ public class DeployService {
 //    }
 
     private Map getRouteInfo(Route route) {
-        def id = route.getId();
+        def routeId = route.getId();
         def group = route.getGroup();
         def desc = route.getDescription();
         try {
             if (desc != null && desc.startsWith("{")) {
                 Flow flow = flowBuilder.parse(desc);
                 return [
-                        'id'          : id,
+                        'routeId'          : routeId,
                         'group'       : group ? group : '缺省分组',
                         'uri'         : URLDecoder.decode(route.getEndpoint().getEndpointUri(), "UTF-8"),
                         'uptimeMillis': route.getUptimeMillis(),
-                        'flow'        : flow
+                        'flow'        : flow.toJSON()
                 ];
             }
         } catch (RuntimeException e) {

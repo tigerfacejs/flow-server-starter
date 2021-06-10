@@ -14,10 +14,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Data
 public class Flow {
@@ -26,11 +23,8 @@ public class Flow {
     private String _entry = null;
 
     String json;
-    String name;
     String group;
     String desc;
-    String status = FlowStatus.draft.toString();
-    String version;
     List<Map> nodes = new ArrayList<>();
 
     String getEntryUri() {
@@ -61,5 +55,18 @@ public class Flow {
 
     String getRouteId() throws UnsupportedEncodingException {
         return Base64.getUrlEncoder().encodeToString(this.getEntryUri().getBytes("utf-8"));
+    }
+
+    void setRouteId(String v){
+        // do nothing
+    }
+
+    Map toJSON() throws UnsupportedEncodingException {
+        return new HashMap(){{
+            put("routeId", getRouteId());
+            put("group", group);
+            put("desc", desc);
+            put("nodes", nodes);
+        }};
     }
 }
