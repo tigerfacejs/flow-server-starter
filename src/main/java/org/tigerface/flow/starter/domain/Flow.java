@@ -19,8 +19,7 @@ import java.util.*;
 
 @Data
 public class Flow {
-    @Value("${flow.server}")
-    private String flowServer;
+    private String currentServer;
 
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
@@ -62,7 +61,8 @@ public class Flow {
     }
 
     String getRouteId() throws UnsupportedEncodingException {
-        return Base64.getUrlEncoder().encodeToString((this.flowServer + "_" + this.getUri()).getBytes("utf-8"));
+        System.out.println("flowServer: "+this.currentServer);
+        return Base64.getUrlEncoder().encodeToString((this.currentServer + "_" + this.getUri()).getBytes("utf-8"));
     }
 
     void setRouteId(String v) {

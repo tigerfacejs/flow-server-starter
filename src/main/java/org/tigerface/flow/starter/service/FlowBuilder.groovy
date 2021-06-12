@@ -8,6 +8,7 @@ import org.apache.camel.Processor
 import org.apache.camel.builder.RouteBuilder
 import org.apache.camel.model.RouteDefinition
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.tigerface.flow.starter.domain.Flow
@@ -20,6 +21,8 @@ import java.text.SimpleDateFormat
 
 @Slf4j
 class FlowBuilder implements ApplicationContextAware {
+    @Value('${flow.server}')
+    private String currentServer;
 
     @Autowired
     ApplicationContext applicationContext
@@ -28,6 +31,7 @@ class FlowBuilder implements ApplicationContextAware {
         Flow flow = null;
         try {
             flow = new JsonSlurper().parseText(flowJson) as Flow;
+            flow.setCurrentServer(this.currentServer);
         } catch (RuntimeException e) {
             e.printStackTrace();
         }
