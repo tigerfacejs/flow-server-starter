@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.camel.builder.RouteBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.tigerface.flow.starter.nodes.EntryNode;
 import org.tigerface.flow.starter.nodes.FlowNode;
 import org.tigerface.flow.starter.service.FlowNodeFactory;
@@ -18,6 +19,9 @@ import java.util.*;
 
 @Data
 public class Flow {
+    @Value("${flow.server}")
+    private String flowServer;
+
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private String _entry = null;
@@ -27,17 +31,17 @@ public class Flow {
     String desc;
     List<Map> nodes = new ArrayList<>();
 
-    String getEntryUri() {
+    String getUri() {
         if (_entry == null) {
             synchronized (this) {
                 if (nodes.size() > 0) {
                     Map node = nodes.get(0);
                     Class clazz = FlowNodeFactory.getNodeClass(node);
                     try {
-                        clazz.getMethod("getEntryUri", Map.class);
+                        clazz.getMethod("getUri", Map.class);
                         Constructor constructor = clazz.getConstructor();
                         EntryNode nodeObj = (EntryNode) constructor.newInstance();
-                        this._entry = nodeObj.getEntryUri(node);
+                        this._entry = nodeObj.getUri(node);
                     } catch (NoSuchMethodException e) {
                         e.printStackTrace();
                     } catch (InvocationTargetException e) {
@@ -53,17 +57,22 @@ public class Flow {
         return this._entry;
     }
 
-    String getRouteId() throws UnsupportedEncodingException {
-        return Base64.getUrlEncoder().encodeToString(this.getEntryUri().getBytes("utf-8"));
-    }
-
-    void setRouteId(String v){
+    void setUri(String v) {
         // do nothing
     }
 
-    Map toJSON() throws UnsupportedEncodingException {
-        return new HashMap(){{
+    String getRouteId() throws UnsupportedEncodingException {
+        return Base64.getUrlEncoder().encodeToString((this.flowServer + "_" + this.getUri()).getBytes("utf-8"));
+    }
+
+    void setRouteId(String v) {
+        // do nothing
+    }
+
+    Map toMap() throws UnsupportedEncodingException {
+        return new HashMap() {{
             put("routeId", getRouteId());
+            put("uri", getUri());
             put("group", group);
             put("desc", desc);
             put("nodes", nodes);

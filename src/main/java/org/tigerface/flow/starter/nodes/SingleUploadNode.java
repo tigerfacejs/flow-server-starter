@@ -23,7 +23,7 @@ import static org.apache.camel.util.function.Suppliers.constant;
 public class SingleUploadNode extends EntryNode {
 
     @Override
-    public String getEntryUri(Map node) {
+    public String getUri(Map node) {
         Map<String, Object> props = (Map<String, Object>) node.get("props");
         String path = props.get("path") != null ? (String) props.get("path") : "/upload";
         if (!path.startsWith("/")) path = "/" + path;
@@ -34,7 +34,7 @@ public class SingleUploadNode extends EntryNode {
     @Override
     public <T extends ProcessorDefinition<T>> T createAndAppend(Map<String, Object> node) {
         Flow flow = (Flow) node.get("flow");
-        String uri = this.getEntryUri(node);
+        String uri = this.getUri(node);
 
         Map<String, Object> props = (Map<String, Object>) node.get("props");
 
@@ -78,17 +78,6 @@ public class SingleUploadNode extends EntryNode {
                 }
             }
         });
-
-//        if (flow.getKey() != null) newRouteDef.routeId(flow.getKey());
-//        else throw new RuntimeException("流程定义缺省关键属性：key");
-
-        if (flow.getGroup() != null)
-            newRouteDef.routeGroup(flow.getGroup());
-        else throw new RuntimeException("流程定义缺省关键属性：group");
-
-        if (flow.getJson() != null)
-            newRouteDef.routeDescription(flow.getJson());
-        else throw new RuntimeException("流程定义缺省关键属性：json");
 
         log.info("创建 single upload 节点 ");
         return (T) newRouteDef;

@@ -49,6 +49,8 @@ class FlowBuilder implements ApplicationContextAware {
                     rd = factory.createAndAppend(node, rd);
                 }
                 rd.routeId(flow.getRouteId());
+                rd.routeDescription(flow.getJson());
+                rd.group(flow.getGroup());
             }
         }
         return builder;

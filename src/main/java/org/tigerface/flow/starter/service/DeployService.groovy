@@ -1,11 +1,13 @@
 package org.tigerface.flow.starter.service
 
 import groovy.util.logging.Slf4j;
-import org.apache.camel.CamelContext;
+import org.apache.camel.CamelContext
+import org.apache.camel.FluentProducerTemplate;
 import org.apache.camel.Route
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.tigerface.flow.starter.domain.Flow;
 
 
@@ -17,6 +19,9 @@ public class DeployService {
     @Autowired
     FlowBuilder flowBuilder;
 
+    @Value('${flow.server}')
+    private String flowServer;
+
     /**
      * 部署 Flow
      *
@@ -24,18 +29,20 @@ public class DeployService {
      * @return
      * @throws Exception
      */
-    Map deploy(String flowJson) throws Exception {
+    String deploy(String flowJson) throws Exception {
         log.info("------ 准备部署流程 ------");
+        log.info("服务器: " + flowServer);
         log.info("解析...");
         Flow flow = flowBuilder.parse(flowJson);
         flow.setJson(flowJson);
-        String uri = flow.getEntryUri();
+
+        String uri = flow.getUri();
         log.info("入口 uri = " + uri);
 
         String id = flow.getRouteId();
         log.info("生成 id = " + id);
 
-        def ret = _remove(id);
+        def ret = remove(id);
         log.info("尝试移除现有流程: " + ret)
 
         RouteBuilder routeBuilder = flowBuilder.build(flow);
@@ -43,21 +50,10 @@ public class DeployService {
         log.info("部署...");
         camelContext.addRoutes(routeBuilder);
         log.info("------ end ------\n");
-        return [message: '部署完毕'];
+        return id;
     }
 
-    /**
-     * 移除 Flow
-     *
-     * @param id
-     * @return
-     * @throws Exception
-     */
-    Map remove(String id) throws Exception {
-        return _remove(id) ? [message: '删除成功'] : [message: '删除失败'];
-    }
-
-    boolean _remove(String id) throws Exception {
+    boolean remove(String id) throws Exception {
         if (camelContext.getRoute(id) != null) {
             log.info("流程已存在：{}", id);
             ((DefaultCamelContext) camelContext).stopRoute(id);
@@ -108,8 +104,9 @@ public class DeployService {
         def routes = camelContext.getRoutes();
         Map<String, Map> index = new HashMap<>();
         for (Route route : routes) {
-            Flow flow = getRouteInfo(route).get('flow');
-            if (flow != null) {
+            String flowJson = getRouteInfo(route).get('flow');
+            if (flowJson != null) {
+                Flow flow = flowBuilder.parse(flowJson);
                 def groupName = route.getGroup() ? route.getGroup() : '缺省分组';
                 Map group = createGroups(index, groupName.replaceAll('/', '.'));
                 group.get('children').add([
@@ -134,9 +131,9 @@ public class DeployService {
         def routes = camelContext.getRoutes();
         List<Map> flows = new ArrayList<>();
         for (Route route : routes) {
-            Flow flow = getRouteInfo(route).get('flow');
-
-            if (flow != null) {
+            String flowJson = getRouteInfo(route).get('flow');
+            if (flowJson != null) {
+                Flow flow = flowBuilder.parse(flowJson);
                 def entry = flow.nodes.get(0);
                 def type = entry.type ? entry.type : entry.eip;
                 if (type == 'from' && entry.props.uri.startsWith('direct:')) {
@@ -150,38 +147,21 @@ public class DeployService {
         return flows;
     }
 
-//    private Map getRouteInfo(Route route) {
-//        def desc = ['desc': route.getDescription()];
-//        try {
-//            if (desc.desc!=null && desc.desc.startsWith("{")) {
-//                desc = new JsonSlurper().parseText(desc.desc)
-//            }
-//        } catch (RuntimeException e) {
-//            // ignore
-//            e.printStackTrace();
-//        }
-//        return [
-//                'id'          : route.getId(),
-//                'group'       : route.getGroup(),
-//                'uri'         : URLDecoder.decode(route.getEndpoint().getEndpointUri(), "UTF-8"),
-//                'uptimeMillis': route.getUptimeMillis(),
-//                'json'        : desc
-//        ];
-//    }
-
     private Map getRouteInfo(Route route) {
         def routeId = route.getId();
         def group = route.getGroup();
         def desc = route.getDescription();
         try {
             if (desc != null && desc.startsWith("{")) {
-                Flow flow = flowBuilder.parse(desc);
+                String flowJson = desc;
+                Flow flow = flowBuilder.parse(flowJson);
                 return [
-                        'routeId'          : routeId,
+                        'routeId'     : routeId,
                         'group'       : group ? group : '缺省分组',
+                        'desc'        : flow.desc,
                         'uri'         : URLDecoder.decode(route.getEndpoint().getEndpointUri(), "UTF-8"),
                         'uptimeMillis': route.getUptimeMillis(),
-                        'flow'        : flow.toJSON()
+                        'flow'        : flowJson
                 ];
             }
         } catch (RuntimeException e) {
@@ -191,7 +171,7 @@ public class DeployService {
         return new HashMap();
     }
 
-    Object getFlow(String id) throws UnsupportedEncodingException {
+    Map getFlow(String id) throws UnsupportedEncodingException {
         Route route = camelContext.getRoute(id);
         if (route != null) {
             return getRouteInfo(route);

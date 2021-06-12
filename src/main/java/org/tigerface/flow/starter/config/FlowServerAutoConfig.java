@@ -1,11 +1,9 @@
 package org.tigerface.flow.starter.config;
 
 import org.apache.camel.builder.RouteBuilder;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.tigerface.flow.starter.route.RestRoute;
+import org.tigerface.flow.starter.route.SystemRoutes;
 import org.tigerface.flow.starter.service.DeployService;
 import org.tigerface.flow.starter.service.FlowBuilder;
 import org.tigerface.flow.starter.service.PluginManager;
@@ -28,6 +26,6 @@ public class FlowServerAutoConfig {
 
     @Bean
     public RouteBuilder restRoute() {
-        return new RestRoute();
+        return new SystemRoutes();
     }
 }

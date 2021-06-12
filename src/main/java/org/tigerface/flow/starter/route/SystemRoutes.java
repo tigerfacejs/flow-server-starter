@@ -1,13 +1,16 @@
 package org.tigerface.flow.starter.route;
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.elasticsearch.ElasticsearchComponent;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-public class RestRoute extends RouteBuilder {
+import static org.apache.camel.language.groovy.GroovyLanguage.groovy;
+
+public class SystemRoutes extends RouteBuilder {
 //    private int port = 8086;
 
     @Autowired
@@ -66,17 +69,19 @@ public class RestRoute extends RouteBuilder {
         rest().post("/flow").route()
 //        from("rest:post:flow")
                 .to("direct:deploy")
+                .setHeader("routeId", simple("${body}"))
+                .to("direct:saveFlowToDB")
+                .setBody(groovy("[msg:'完成部署']"))
                 .group("系统流程").description("部署流程入口").setId("DeployFlow");
 
         // Rest 获取流程信息
-        rest().get("/flow/{id}").route()
+        rest().get("/flow/{routeId}").route()
 //        from("rest:get:flow/{id}")
-                .setBody(header("id"))
+                .setBody(header("routeId"))
                 .bean("deployService", "getFlow")
                 .marshal().json()
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
                 .group("系统流程").description("获取流程信息").setId("GetFlowInfo");
-
         // Rest 列出流程信息
         rest().get("/flows").route()
 //        from("rest:get:flows")
@@ -104,23 +109,101 @@ public class RestRoute extends RouteBuilder {
 //        from("rest:delete:flow/{id}")
                 .setBody(header("id"))
                 .log("---remove-- \n${body}")
+                .setHeader("routeId", simple("${body}"))
                 .bean("deployService", "remove")
+                .choice().when().simple("${body}")
+                .to("direct:removeFlowToDB")
+                .setBody(groovy("[msg:'删除成功']"))
+                .otherwise()
+                .setBody(groovy("[msg:'删除失败']"))
                 .marshal().json();
 
 
         // 文件部署流程
         from("file://" + path + "?charset=utf-8&recursive=true&delete=true&include=.*\\.json$&exclude=package.json")
-                .log("---deploy-- \n${body}")
+                .log(LoggingLevel.DEBUG, "---deploy-- \n${body}")
                 .transform().method("deployService", "deploy")
                 .routeGroup("系统流程").description("文件部署流程").setId("DeployFlowFromPath");
 
         // 部署主流程
         from("direct:deploy")
                 .group("系统流程").description("部署主流程").id("MainDeployFlow")
-                .log("---deploy-- \n${body}")
-                .bean("deployService", "deploy")
-                .marshal().json();
+                .log(LoggingLevel.DEBUG, "---deploy-- \n${body}")
+                .bean("deployService", "deploy");
 
+        // 从DB查询全部流程，入口条件：无
+        from("direct:listFlowsFromDB")
+                .setBody(simple("SELECT ROUTE_ID as 'routeId', FLOW_SERVER as 'server', FLOW_URI as 'uri', FLOW_GROUP as 'group', FLOW_DESC as 'desc', FLOW_JSON as 'json' FROM flowdb.T_FLOWS WHERE FLOW_SERVER = '{{flow.server}}'"))
+                .log(LoggingLevel.DEBUG, "\nSQL >>> ${body}")
+                .to("jdbc:dataSource");
+
+        // 从DB查询流程，入口条件: ${header.routeId}
+        from("direct:getFlowFromDB")
+                .setBody(simple("SELECT ROUTE_ID, FLOW_SERVER, FLOW_URI, FLOW_GROUP, FLOW_DESC, FLOW_JSON, CREATE_TIME, UPDATE_TIME FROM flowdb.T_FLOWS " +
+                        "WHERE ROUTE_ID = '${header.data[routeId]}'"))
+                .log(LoggingLevel.DEBUG, "\ngetFlowFromDB\nSQL >>> ${body}")
+                .to("jdbc:dataSource");
+//
+        // 插入新流程
+        from("direct:addFlowToDB")
+                .setBody(simple("INSERT INTO flowdb.T_FLOWS (ROUTE_ID, FLOW_SERVER, FLOW_URI, FLOW_GROUP, FLOW_DESC, FLOW_JSON, CREATE_TIME, UPDATE_TIME)" +
+                        " VALUES ('${header.data[routeId]}', '{{flow.server}}', '${header.data[uri]}', '${header.data[group]}', '${header.data[desc]}', '${header.data[json]}', now(), now())"))
+                .log(LoggingLevel.DEBUG, "\naddFlowToDB\nSQL >>> ${body}")
+                .to("jdbc:dataSource");
+//
+        // 更新新流程
+        from("direct:modifyFlowToDB")
+                .setBody(simple("UPDATE flowdb.T_FLOWS SET FLOW_SERVER = '{{flow.server}}', FLOW_URI = '${header.data[uri]}', FLOW_GROUP = '${header.data[group]}', FLOW_DESC = '${header.data[desc]}'," +
+                        "FLOW_JSON = '${header.data[json]}', UPDATE_TIME = now() WHERE ROUTE_ID = '${header.data[routeId]}'"))
+                .log(LoggingLevel.DEBUG, "\nmodifyFlowToDB\nSQL >>> ${body}")
+                .to("jdbc:dataSource");
+//
+        // 删除流程
+        from("direct:removeFlowToDB")
+                .setBody(simple("DELETE FROM flowdb.T_FLOWS WHERE ROUTE_ID = '${header.routeId}'"))
+                .log(LoggingLevel.DEBUG, "\nmodifyFlowToDB\nSQL >>> ${body}")
+                .to("jdbc:dataSource");
+
+        // 启动时调用从数据库装入
+        from("spring-event:AvailabilityChangeEvent")
+                .filter().groovy("body instanceof org.springframework.boot.availability.AvailabilityChangeEvent")
+                .filter().groovy("'CORRECT' == body.getState().toString()")
+                .to("direct:loadFlows")
+                .end();
+
+        // 从数据库装入
+        from("direct:loadFlows")
+                .to("direct:listFlowsFromDB")
+                .split(simple("${body}"))
+                .log(LoggingLevel.DEBUG, "\nbody >>> \n${body}")
+                .setBody(simple("${body[json]}"))
+                .transform().groovy("new String(Base64.getDecoder().decode(body.getBytes('UTF-8')))")
+                .filter().simple("${body} != null && ${body.length} > 0")
+                .log(LoggingLevel.INFO, "数据来源：DB")
+                .log(LoggingLevel.DEBUG, "---deploy-- \n${body}")
+                .transform().method("deployService", "deploy")
+                .routeGroup("系统流程").description("数据库部署流程").routeId("DeployFlowFromDB");
+
+        // 保存数据库
+        from("direct:saveFlowToDB")
+                .bean("deployService", "getFlow")
+                .claimCheck().operation("SET").key("flow")
+                .setBody(simple("${body[flow]}"))
+                .transform().groovy("Base64.getEncoder().encodeToString(body.getBytes('UTF-8'))")
+                .setHeader("flow", simple("${body}"))
+                .claimCheck().operation("GET").key("flow")
+                .setHeader("data", groovy("[routeId:body.routeId, uri:body.uri, group:body.group, desc:body.desc, json:headers.flow]"))
+                .log(LoggingLevel.DEBUG, "\nFor Query\n ${header.data}")
+                .to("direct:getFlowFromDB")
+                .log(LoggingLevel.DEBUG, "\nQuery Result:\n ${body}")
+                .choice()
+                .when(simple("${body.empty}"))
+                .log(LoggingLevel.DEBUG, ">>> ${body}")
+                .to("direct:addFlowToDB")
+                .otherwise()
+                .to("direct:modifyFlowToDB")
+                .endChoice()
+                .end();
 
 //        // mq 发布测试
 //        from("rest:post:mq")
