@@ -5,8 +5,13 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.elasticsearch.ElasticsearchComponent;
 import org.apache.camel.model.rest.RestBindingMode;
+import org.apache.camel.model.rest.RestParamType;
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.tigerface.flow.starter.domain.Message;
+
+import java.util.List;
 
 import static org.apache.camel.language.groovy.GroovyLanguage.groovy;
 
@@ -55,58 +60,73 @@ public class SystemRoutes extends RouteBuilder {
                 .port(8086)
                 .enableCORS(true)
                 .corsAllowCredentials(true)
-                .bindingMode(RestBindingMode.off);
+                .bindingMode(RestBindingMode.off)
+                .apiContextPath("/api-doc")
+                .apiProperty("api.title", "Flow Server").apiProperty("api.version", "1.0.0")
+                .apiProperty("cors", "true");
 
 
         // 基础流程，系统基本状态
-        rest().get("/").route()
+        rest("/").get().description("引导入口").route()
 //        from("rest:get:who")
                 .transform().simple("这是一个 Flow Server，你可以通过 POST ../deploy 来部署一个流程。")
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
-                .group("系统流程").description("检查入口").setId("Who");
+                .group("系统流程").setId("Who");
 
         // Rest 部署流程入口
-        rest().post("/flow").route()
-//        from("rest:post:flow")
+        rest("/flow")
+                .description("流程服务")
+                .consumes("application/json").produces("application/json")
+                .post().description("部署流程")
+                .param().name("flow").description("流程信息").type(RestParamType.body).endParam()
+                .route()
                 .to("direct:deploy")
                 .setHeader("routeId", simple("${body}"))
                 .to("direct:saveFlowToDB")
                 .setBody(groovy("[msg:'完成部署']"))
-                .group("系统流程").description("部署流程入口").setId("DeployFlow");
+                .group("系统流程").setId("DeployFlow");
 
         // Rest 获取流程信息
-        rest().get("/flow/{routeId}").route()
-//        from("rest:get:flow/{id}")
+        rest("/flow")
+                .description("流程服务")
+                .consumes("application/json").produces("application/json")
+                .get("/{routeId}").description("获取流程信息")
+                .param().name("routeId").description("流程 id").type(RestParamType.path).endParam()
+                .route()
                 .setBody(header("routeId"))
                 .bean("deployService", "getFlow")
                 .marshal().json()
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
-                .group("系统流程").description("获取流程信息").setId("GetFlowInfo");
+                .group("系统流程").setId("GetFlowInfo");
         // Rest 列出流程信息
-        rest().get("/flows").route()
-//        from("rest:get:flows")
-//                .setHeader("Access-Control-Allow-Credentials", constant("true"))
-//                .setHeader("Access-Control-Allow-Headers", constant("Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"))
-////                .setHeader("Access-Control-Allow-Origin", constant("*"))
-//                .setHeader("Access-Control-Allow-Origin", header("Origin"))
-//                .setHeader("Access-Control-Allow-Methods", constant("GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, CONNECT, PATCH"))
-//                .setHeader("Access-Control-Max-Age", constant("3600"))
+        rest("/flows")
+                .description("流程服务")
+                .consumes("application/json").produces("application/json")
+                .get().description("列出全部流程").outType(List.class)
+                .route()
                 .bean("deployService", "listFlows")
                 .marshal().json()
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
-                .group("系统流程").description("列出全部流程").setId("ListFlows");
+                .group("系统流程").setId("ListFlows");
 
         // Rest 列出流程信息
-        rest().get("/subflows").route()
+        rest("/subflows")
+                .description("子流程服务")
+                .consumes("application/json").produces("application/json")
+                .get().description("列出全部子流程").route()
                 .bean("deployService", "listDirectFlows")
                 .marshal().json()
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
-                .group("系统流程").description("列出全部直接流程").setId("ListSubFlows");
+                .group("系统流程").setId("ListSubFlows");
 
         // Rest 删除流程入口
-        rest().delete("flow/{id}").route()
-                .group("系统流程").description("删除流程入口").id("RemoveFlow")
-//        from("rest:delete:flow/{id}")
+        rest("/flow")
+                .description("流程服务")
+                .consumes("application/json").produces("application/json")
+                .delete("/{routeId}").description("根据 id 删除流程").outType(Message.class)
+                .param().name("routeId").description("流程 id").type(RestParamType.path).endParam()
+                .route()
+                .group("系统流程").id("RemoveFlow")
                 .setBody(header("id"))
                 .log("---remove-- \n${body}")
                 .setHeader("routeId", simple("${body}"))
