@@ -22,30 +22,34 @@ public class RestFromNode extends EntryNode {
     @Override
     public String getUri(Map node) {
         Map<String, Object> props = (Map<String, Object>) node.get("props");
-
-        String uri = "rest:" + (String) props.get("method") + ":" + (String) props.get("path");
+        String service = (String) props.get("service");
+        String path = (String) props.get("path");
+        String method = (String) props.get("method");
+        String uri = "rest:" + method + ":" + service + path;
         return uri;
     }
 
     @Override
     public <T extends ProcessorDefinition<T>> T createAndAppend(Map<String, Object> node) {
-        Flow flow = (Flow) node.get("flow");
         Map<String, Object> props = (Map<String, Object>) node.get("props");
         String service = (String) props.get("service");
         String path = (String) props.get("path");
         String method = (String) props.get("method");
         String desc = (String) props.get("desc");
 
-        RestDefinition rd = this.builder.rest(service).description(desc);
-        if(method.equalsIgnoreCase("GET")) {
-            rd = rd.get(path);
-        } else if(method.equalsIgnoreCase("POST")) {
-            rd = rd.post(path);
-        } else if(method.equalsIgnoreCase("PUT")) {
-            rd = rd.put(path);
-        } else if(method.equalsIgnoreCase("DELETE")) {
-            rd = rd.delete(path);
+        RestDefinition rd = (service != null & service.length() > 0) ? this.builder.rest(service) : this.builder.rest();
+
+        if (method.equalsIgnoreCase("GET")) {
+            rd = (path != null & path.length() > 0) ? rd.get(path) : rd.get();
+        } else if (method.equalsIgnoreCase("POST")) {
+            rd = (path != null & path.length() > 0) ? rd.post(path) : rd.post();
+        } else if (method.equalsIgnoreCase("PUT")) {
+            rd = (path != null & path.length() > 0) ? rd.put(path) : rd.put();
+        } else if (method.equalsIgnoreCase("DELETE")) {
+            rd = (path != null & path.length() > 0) ? rd.delete(path) : rd.delete();
         }
+        rd = rd.consumes("application/json").produces("application/json");
+        rd = rd.description(desc);
 
         List<Map> params = (List<Map>) props.get("swagger");
 
@@ -66,7 +70,7 @@ public class RestFromNode extends EntryNode {
         newRouteDef.process(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
-                System.out.println("LOG >>> routeUri = "+exchange.getFromEndpoint().getEndpointUri()+", exchangeId = " + exchange.getExchangeId());
+                System.out.println("LOG >>> routeUri = " + exchange.getFromEndpoint().getEndpointUri() + ", exchangeId = " + exchange.getExchangeId());
             }
         });
 

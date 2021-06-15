@@ -126,15 +126,14 @@ public class SystemRoutes extends RouteBuilder {
                 .param().name("routeId").description("流程 id").type(RestParamType.path).endParam()
                 .route()
                 .group("系统流程").id("RemoveFlow")
-                .setBody(header("id"))
-                .log("---remove-- \n${body}")
-                .setHeader("routeId", simple("${body}"))
+                .log("---remove-- \n${header.routeId}")
+                .setBody(simple("${header.routeId}"))
                 .bean("deployService", "remove")
-                .choice().when().simple("${body}")
+                .choice().when().simple("${header.routeId} != null")
                 .to("direct:removeFlowToDB")
-                .setBody(groovy("[msg:'删除成功']"))
+                .setBody(groovy("[errorCode:0, message:'删除成功']"))
                 .otherwise()
-                .setBody(groovy("[msg:'删除失败']"))
+                .setBody(groovy("[errorCode:1, message:'参数 routeId 无效']"))
                 .marshal().json();
 
 
@@ -180,7 +179,7 @@ public class SystemRoutes extends RouteBuilder {
         // 删除流程
         from("direct:removeFlowToDB")
                 .setBody(simple("DELETE FROM flowdb.T_FLOWS WHERE ROUTE_ID = '${header.routeId}'"))
-                .log(LoggingLevel.DEBUG, "\nmodifyFlowToDB\nSQL >>> ${body}")
+                .log(LoggingLevel.INFO, "\nremoveFlowToDB\nSQL >>> ${body}")
                 .to("jdbc:dataSource");
 
         // 启动时调用从数据库装入
