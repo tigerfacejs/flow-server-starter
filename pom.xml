@@ -71,6 +71,11 @@
             <version>${camel.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-minio-starter</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-http</artifactId>
             <version>${camel.version}</version>

@@ -30,12 +30,12 @@ public class PluginManager {
             FlowNodeFactory.register("split", SplitNode.class);
             FlowNodeFactory.register("process", ProcessNode.class);
             FlowNodeFactory.register("loop", LoopNode.class);
-            FlowNodeFactory.register("singleUpload", SingleUploadNode.class);
+            FlowNodeFactory.register("upload", UploadNode.class);
             FlowNodeFactory.register("toDB", ToDBNode.class);
+            FlowNodeFactory.register("minio", MinioNode.class);
 
             FlowNodeFactory.register("rest", RestFromNode.class);
             FlowNodeFactory.register("cors", CorsNode.class);
-
 
         } catch (Exception e) {
             e.printStackTrace();
