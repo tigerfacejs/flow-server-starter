@@ -82,7 +82,9 @@ public class SystemRoutes extends RouteBuilder {
                 .to("direct:deploy")
                 .setHeader("routeId", simple("${body}"))
                 .to("direct:saveFlowToDB")
-                .setBody(groovy("[msg:'完成部署']"))
+                .setBody(groovy("[errorCode:0, msg:'部署完成']"))
+                .marshal().json()
+                .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
                 .group("系统流程").setId("DeployFlow");
 
         // Rest 获取流程信息
@@ -131,9 +133,11 @@ public class SystemRoutes extends RouteBuilder {
                 .bean("deployService", "remove")
                 .choice().when().simple("${header.routeId} != null")
                 .to("direct:removeFlowToDB")
-                .setBody(groovy("[errorCode:0, message:'删除成功']"))
+                .setBody(groovy("[errorCode:0, msg:'删除完成']"))
                 .otherwise()
-                .setBody(groovy("[errorCode:1, message:'参数 routeId 无效']"))
+                .setBody(groovy("[errorCode:1, msg:'参数 routeId 无效']"))
+                .end()
+                .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
                 .marshal().json();
 
 
