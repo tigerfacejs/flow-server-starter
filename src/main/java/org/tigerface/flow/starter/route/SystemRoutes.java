@@ -335,7 +335,7 @@ public class SystemRoutes extends RouteBuilder {
                 .log("**** body **** ${body}")
                 .group("系统流程").description("写 elasticsearch 流程").setId("AddToElasticsearch");
 
-        String uri = "websocket://127.0.0.1:7086/terminal";
+        String uri = "websocket://0.0.0.0:7086/terminal";
         from(uri)
                 .log(">>> Message received from WebSocket Client : ${body}")
                 .setBody().simple(">> ${body}")
