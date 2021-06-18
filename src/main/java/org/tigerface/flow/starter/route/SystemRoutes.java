@@ -190,7 +190,12 @@ public class SystemRoutes extends RouteBuilder {
         from("spring-event:AvailabilityChangeEvent")
                 .filter().groovy("body instanceof org.springframework.boot.availability.AvailabilityChangeEvent")
                 .filter().groovy("'CORRECT' == body.getState().toString()")
+                .to("direct:initTerminal")
                 .to("direct:loadFlows")
+                .end();
+
+        from("direct:initTerminal")
+                .bean("terminalService", "initTerminal")
                 .end();
 
         // 从数据库装入
@@ -327,7 +332,16 @@ public class SystemRoutes extends RouteBuilder {
 
         from("direct:toES")
                 .toD("elasticsearch-rest://docker-cluster?operation=Index&indexName=${header.ESIndexName}")
-//                .log("**** body **** ${body}")
+                .log("**** body **** ${body}")
                 .group("系统流程").description("写 elasticsearch 流程").setId("AddToElasticsearch");
+
+        String uri = "websocket://127.0.0.1:7086/terminal";
+        from(uri)
+                .log(">>> Message received from WebSocket Client : ${body}")
+                .setBody().simple(">> ${body}")
+                .to(uri+"?sendToAll=true");
+
+        from("direct:logAppendToTerminal")
+                .to(uri+"?sendToAll=true");
     }
 }

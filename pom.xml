@@ -85,6 +85,16 @@
             <artifactId>camel-servlet-starter</artifactId>
             <version>${camel.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-csv-starter</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-barcode-starter</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
 <!--        <dependency>-->
 <!--            <groupId>org.apache.camel</groupId>-->
 <!--            <artifactId>camel-mongodb</artifactId>-->

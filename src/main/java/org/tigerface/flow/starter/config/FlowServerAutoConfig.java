@@ -7,6 +7,7 @@ import org.tigerface.flow.starter.route.SystemRoutes;
 import org.tigerface.flow.starter.service.DeployService;
 import org.tigerface.flow.starter.service.FlowBuilder;
 import org.tigerface.flow.starter.service.PluginManager;
+import org.tigerface.flow.starter.service.TerminalService;
 
 @Configuration
 //@ConditionalOnClass(RestRoute.class)
@@ -22,6 +23,11 @@ public class FlowServerAutoConfig {
     @Bean
     public DeployService deployService() {
         return new DeployService();
+    }
+
+    @Bean
+    public TerminalService terminalService() {
+        return new TerminalService();
     }
 
     @Bean

@@ -1,5 +1,6 @@
 package org.tigerface.flow.starter.service;
 
+import org.apache.camel.Message;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.ProcessorDefinition;
 import org.tigerface.flow.starter.nodes.FlowNode;
@@ -32,7 +33,17 @@ public class FlowNodeFactory {
         try {
             nodeObj = (FlowNode) clazz.getConstructor().newInstance();
             nodeObj.setBuilder(builder);
-            return nodeObj.createAndAppend(node, rd);
+            T pd = nodeObj.createAndAppend(node, rd);
+            pd.wireTap("direct:esTracker").newExchange(exchange -> {
+                Message message = exchange.getIn();
+                message.setHeader("LastNodeType", node.get("type"));
+//                System.out.println("\n>>>" + node.get("type"));
+                node.remove("flow");
+                message.setBody(node);
+            });
+            return pd;
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {

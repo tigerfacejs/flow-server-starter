@@ -61,7 +61,6 @@ public class Flow {
     }
 
     String getRouteId() throws UnsupportedEncodingException {
-        System.out.println("flowServer: "+this.currentServer);
         return Base64.getUrlEncoder().encodeToString((this.currentServer + "_" + this.getUri()).getBytes("utf-8"));
     }
 
