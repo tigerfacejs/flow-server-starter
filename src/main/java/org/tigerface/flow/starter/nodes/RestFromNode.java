@@ -60,12 +60,12 @@ public class RestFromNode extends EntryNode {
 
         ProcessorDefinition newRouteDef = rd.route();
 
-        newRouteDef.process(new Processor() {
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                System.out.println("LOG >>> routeUri = " + exchange.getFromEndpoint().getEndpointUri() + ", exchangeId = " + exchange.getExchangeId());
-            }
-        });
+//        newRouteDef.process(new Processor() {
+//            @Override
+//            public void process(Exchange exchange) throws Exception {
+//                System.out.println("LOG >>> routeUri = " + exchange.getFromEndpoint().getEndpointUri() + ", exchangeId = " + exchange.getExchangeId());
+//            }
+//        });
 
         log.info("创建 rest 节点 ");
         return (T) newRouteDef;
