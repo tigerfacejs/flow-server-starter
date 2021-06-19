@@ -86,7 +86,6 @@ public class DeployService {
             parentName += currentName;
             Map group = index.get(parentName);
             if (group == null) {
-                log.info("创建组 ${parentName}")
                 group = ['title': currentName, 'key': currentName, 'children': new ArrayList(), 'isLeaf': false];
                 index.put(parentName, group);
                 if (parent != null) {
