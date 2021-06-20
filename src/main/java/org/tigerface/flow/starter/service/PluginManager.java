@@ -35,6 +35,8 @@ public class PluginManager {
             FlowNodeFactory.register("minio", MinioNode.class);
             FlowNodeFactory.register("multicast", MulticastNode.class);
             FlowNodeFactory.register("recipientList", RecipientListNode.class);
+            FlowNodeFactory.register("delay", DelayNode.class);
+            FlowNodeFactory.register("loadBalance", LoadBalanceNode.class);
 
             FlowNodeFactory.register("rest", RestFromNode.class);
             FlowNodeFactory.register("cors", CorsNode.class);
