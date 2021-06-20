@@ -33,6 +33,8 @@ public class PluginManager {
             FlowNodeFactory.register("upload", UploadNode.class);
             FlowNodeFactory.register("toDB", ToDBNode.class);
             FlowNodeFactory.register("minio", MinioNode.class);
+            FlowNodeFactory.register("multicast", MulticastNode.class);
+            FlowNodeFactory.register("recipientList", RecipientListNode.class);
 
             FlowNodeFactory.register("rest", RestFromNode.class);
             FlowNodeFactory.register("cors", CorsNode.class);

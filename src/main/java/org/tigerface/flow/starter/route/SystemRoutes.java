@@ -155,6 +155,7 @@ public class SystemRoutes extends RouteBuilder {
 
         // 从DB查询全部流程，入口条件：无
         from("direct:listFlowsFromDB")
+                .log("从数据库装入已存在的流程 {{flow.server}}")
                 .setBody(simple("SELECT ROUTE_ID as 'routeId', FLOW_SERVER as 'server', FLOW_URI as 'uri', FLOW_GROUP as 'group', FLOW_DESC as 'desc', FLOW_JSON as 'json' FROM flowdb.T_FLOWS WHERE FLOW_SERVER = '{{flow.server}}'"))
                 .log(LoggingLevel.DEBUG, "\nSQL >>> ${body}")
                 .to("jdbc:dataSource");
