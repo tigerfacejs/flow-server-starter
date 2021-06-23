@@ -37,6 +37,7 @@ public class PluginManager {
             FlowNodeFactory.register("recipientList", RecipientListNode.class);
             FlowNodeFactory.register("delay", DelayNode.class);
             FlowNodeFactory.register("loadBalance", LoadBalanceNode.class);
+            FlowNodeFactory.register("threads", ThreadsNode.class);
 
             FlowNodeFactory.register("rest", RestFromNode.class);
             FlowNodeFactory.register("cors", CorsNode.class);
