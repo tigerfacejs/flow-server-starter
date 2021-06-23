@@ -158,7 +158,8 @@ public class DeployService {
                         'routeId'     : routeId,
                         'group'       : group ? group : '缺省分组',
                         'desc'        : flow.desc,
-                        'uri'         : URLDecoder.decode(route.getEndpoint().getEndpointUri(), "UTF-8"),
+                        'uri'         : URLDecoder.decode(flow.uri, "UTF-8"),
+//                        'uri'         : URLDecoder.decode(route.getEndpoint().getEndpointUri(), "UTF-8"),
                         'uptimeMillis': route.getUptimeMillis(),
                         'flow'        : flowJson
                 ];

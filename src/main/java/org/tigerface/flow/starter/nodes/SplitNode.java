@@ -42,6 +42,12 @@ public class SplitNode extends FlowNode {
             sd = rd.split(splitExp);
         }
 
+        String parallelProcessing = (String) props.get("parallelProcessing");
+        sd.parallelProcessing(parallelProcessing);
+
+        String parallelAggregate = (String) props.get("parallelAggregate");
+        sd.parallelAggregate(parallelAggregate);
+
         List<Map> nodes = (List<Map>) split.get("nodes");
         if (!nodes.isEmpty()) {
             for (Map sub : nodes) {
