@@ -19,13 +19,6 @@ public class ThreadsNode extends FlowNode {
 
         log.info("创建 Threads 节点");
 
-        System.out.println("id="+Thread.currentThread().getId());
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         return rd;
     }
 }
