@@ -20,6 +20,8 @@ public class ThreadsNode extends FlowNode {
 
         ThreadsDefinition td = rd.threads();
         td.poolSize(poolSize).maxPoolSize(maxPoolSize).keepAliveTime(keepAliveTime);
+        //不绑定队列
+        td.maxQueueSize(-1);
 
         List<Map> nodes = (List<Map>) props.get("nodes");
         if (!nodes.isEmpty()) {
