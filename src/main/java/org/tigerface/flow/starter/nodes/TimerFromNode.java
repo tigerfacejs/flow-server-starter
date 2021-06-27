@@ -13,23 +13,27 @@ public class TimerFromNode extends EntryNode {
     public String getUri(Map node) {
         Map<String, Object> props = (Map<String, Object>) node.get("props");
         String name = (String) props.get("name");
-        String uri = "timer:" + name + "?fixedRate=true";
+        String uri = "timer:" + name;
         String time = (String) props.get("time");
         if (time != null && time.length() > 0) {
-            uri += "?time=" + time;
+            uri += "?fixedRate=true&time=" + time;
         } else {
             String delay = (String) props.get("delay");
             if (delay != null && delay.length() > 0) {
-                uri += "?delay=" + delay;
+                uri += "?fixedRate=true&delay=" + delay;
             }
         }
         String period = (String) props.get("period");
         if (period != null && period.length() > 0) {
-            uri += "&period=" + period;
+            if(uri.indexOf("?")>=0) uri+="&";
+            else uri+="?";
+            uri += "period=" + period;
         }
         String repeatCount = (String) props.get("repeatCount");
         if (repeatCount != null && repeatCount.length() > 0) {
-            uri += "&repeatCount=" + repeatCount;
+            if(uri.indexOf("?")>=0) uri+="&";
+            else uri+="?";
+            uri += "repeatCount=" + repeatCount;
         }
         return uri;
     }
