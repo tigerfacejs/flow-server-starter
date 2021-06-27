@@ -92,6 +92,16 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-cron-starter</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-timer-starter</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-barcode-starter</artifactId>
             <version>${camel.version}</version>
         </dependency>

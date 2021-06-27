@@ -43,7 +43,8 @@ public class PluginManager {
 
             FlowNodeFactory.register("rest", RestFromNode.class);
             FlowNodeFactory.register("cors", CorsNode.class);
-
+            FlowNodeFactory.register("cron", CronFromNode.class);
+            FlowNodeFactory.register("timer", TimerFromNode.class);
         } catch (Exception e) {
             e.printStackTrace();
         }

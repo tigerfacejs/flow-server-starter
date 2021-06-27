@@ -34,13 +34,13 @@ public class FlowNodeFactory {
             nodeObj = (FlowNode) clazz.getConstructor().newInstance();
             nodeObj.setBuilder(builder);
             T pd = nodeObj.createAndAppend(node, rd);
-            pd.wireTap("direct:esTracker").newExchange(exchange -> {
-                Message message = exchange.getIn();
-                message.setHeader("LastNodeType", node.get("type"));
-//                System.out.println("\n>>>" + node.get("type"));
-                node.remove("flow");
-                message.setBody(node);
-            });
+//            pd.wireTap("direct:esTracker").newExchange(exchange -> {
+//                Message message = exchange.getIn();
+//                message.setHeader("LastNodeType", node.get("type"));
+////                System.out.println("\n>>>" + node.get("type"));
+//                node.remove("flow");
+//                message.setBody(node);
+//            });
             return pd;
         } catch (NullPointerException e) {
             e.printStackTrace();
