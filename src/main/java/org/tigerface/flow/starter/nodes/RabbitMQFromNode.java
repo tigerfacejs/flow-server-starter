@@ -8,26 +8,19 @@ import org.tigerface.flow.starter.utils.StringUtils;
 import java.util.Map;
 
 @Slf4j
-public class TimerFromNode extends EntryNode {
-
+public class RabbitMQFromNode extends EntryNode {
     @Override
     public String getUri(Map node) {
         Map<String, Object> props = (Map<String, Object>) node.get("props");
-        String name = (String) props.get("name");
-        String uri = "timer:" + name;
+        String exchangeName = (String) props.get("exchangeName");
+        String uri = "spring-rabbitmq:" + exchangeName;
 
-        String time = (String) props.get("time");
-        if (time != null && time.length() > 0) {
-            uri += "?fixedRate=true&time=" + time;
-        } else {
-            String delay = (String) props.get("delay");
-            if (delay != null && delay.length() > 0) {
-                uri += "?fixedRate=true&delay=" + delay;
-            }
-        }
-
-        uri += StringUtils.queryParam("period", props.get("period"), uri);
-        uri += StringUtils.queryParam("repeatCount", props.get("repeatCount"), uri);
+        uri += StringUtils.queryParam("autoDeclare", "true", uri);
+        uri += StringUtils.queryParam("routingKey", props.get("routingKey"), uri);
+        uri += StringUtils.queryParam("queues", props.get("queues"), uri);
+        uri += StringUtils.queryParam("asyncConsumer", props.get("asyncConsumer"), uri);
+        uri += StringUtils.queryParam("exchangeType", props.get("exchangeType"), uri);
+        uri += StringUtils.queryParam("exclusive", props.get("exclusive"), uri);
 
         return uri;
     }
@@ -40,7 +33,8 @@ public class TimerFromNode extends EntryNode {
 
         RouteDefinition rd = this.builder.from(uri).description(desc);
 
-        log.info("创建 Timer 节点 ");
+        log.info("创建 RabbitMQ 节点 ");
+        log.info("URI = " + uri);
         return (T) rd;
     }
 }

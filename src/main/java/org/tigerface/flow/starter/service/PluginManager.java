@@ -45,6 +45,7 @@ public class PluginManager {
             FlowNodeFactory.register("cors", CorsNode.class);
             FlowNodeFactory.register("cron", CronFromNode.class);
             FlowNodeFactory.register("timer", TimerFromNode.class);
+            FlowNodeFactory.register("rabbitmq", RabbitMQFromNode.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
