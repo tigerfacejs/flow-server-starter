@@ -1,6 +1,8 @@
 package org.tigerface.flow.starter.config;
 
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.jdbc.BeanRowMapper;
+import org.apache.camel.component.jdbc.DefaultBeanRowMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.tigerface.flow.starter.route.SystemRoutes;

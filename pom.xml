@@ -16,7 +16,7 @@
     <properties>
         <java.version>1.8</java.version>
         <lombok.version>1.18.16</lombok.version>
-        <camel.version>3.9.0</camel.version>
+        <camel.version>3.10.0</camel.version>
         <grovvy.version>3.0.7</grovvy.version>
         <mysql.version>8.0.24</mysql.version>
     </properties>
@@ -35,11 +35,11 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-<!--                <dependency>-->
-<!--                    <groupId>org.apache.camel.springboot</groupId>-->
-<!--                    <artifactId>camel-spring-boot-starter</artifactId>-->
-<!--                    <version>${camel.version}</version>-->
-<!--                </dependency>-->
+        <!--                <dependency>-->
+        <!--                    <groupId>org.apache.camel.springboot</groupId>-->
+        <!--                    <artifactId>camel-spring-boot-starter</artifactId>-->
+        <!--                    <version>${camel.version}</version>-->
+        <!--                </dependency>-->
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-spring-boot</artifactId>
@@ -105,11 +105,11 @@
             <artifactId>camel-barcode-starter</artifactId>
             <version>${camel.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.apache.camel</groupId>-->
-<!--            <artifactId>camel-mongodb</artifactId>-->
-<!--            <version>${camel.version}</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.apache.camel</groupId>-->
+        <!--            <artifactId>camel-mongodb</artifactId>-->
+        <!--            <version>${camel.version}</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-spring-redis</artifactId>
@@ -151,8 +151,8 @@
             <version>${camel.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-jdbc</artifactId>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-spring-jdbc-starter</artifactId>
             <version>${camel.version}</version>
         </dependency>
         <dependency>
@@ -201,10 +201,10 @@
 
     <build>
         <plugins>
-<!--            <plugin>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
-<!--            </plugin>-->
+            <!--            <plugin>-->
+            <!--                <groupId>org.springframework.boot</groupId>-->
+            <!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
+            <!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>

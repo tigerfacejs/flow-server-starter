@@ -31,7 +31,7 @@ public class PluginManager {
             FlowNodeFactory.register("process", ProcessNode.class);
             FlowNodeFactory.register("loop", LoopNode.class);
             FlowNodeFactory.register("upload", UploadNode.class);
-            FlowNodeFactory.register("toDB", ToDBNode.class);
+            FlowNodeFactory.register("toDB", ToDataSourceNode.class);
             FlowNodeFactory.register("minio", MinioNode.class);
             FlowNodeFactory.register("multicast", MulticastNode.class);
             FlowNodeFactory.register("recipientList", RecipientListNode.class);
@@ -45,7 +45,8 @@ public class PluginManager {
             FlowNodeFactory.register("cors", CorsNode.class);
             FlowNodeFactory.register("cron", CronFromNode.class);
             FlowNodeFactory.register("timer", TimerFromNode.class);
-            FlowNodeFactory.register("rabbitmq", RabbitMQFromNode.class);
+            FlowNodeFactory.register("fromRabbitmq", RabbitMQFromNode.class);
+            FlowNodeFactory.register("toRabbitmq", RabbitMQNode.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
