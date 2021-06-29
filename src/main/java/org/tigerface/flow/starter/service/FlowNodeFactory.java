@@ -24,7 +24,9 @@ public class FlowNodeFactory {
 
     public static Class getNodeClass(Map<String, Object> node) {
         String type = (String) node.get("type");
-        return nodeClazz.get(type);
+        Class clazz = nodeClazz.get(type);
+        if(clazz==null) throw new RuntimeException("工厂创建对象失败：节点类型 "+type+" 不存在");
+        return clazz;
     }
 
     public <T extends ProcessorDefinition<T>> T createAndAppend(Map<String, Object> node, T rd) {

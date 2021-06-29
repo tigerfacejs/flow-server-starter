@@ -41,6 +41,8 @@ public class Flow {
                         Constructor constructor = clazz.getConstructor();
                         EntryNode nodeObj = (EntryNode) constructor.newInstance();
                         this._entry = nodeObj.getUri(node);
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
                     } catch (NoSuchMethodException e) {
                         e.printStackTrace();
                     } catch (InvocationTargetException e) {

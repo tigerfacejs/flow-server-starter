@@ -156,34 +156,34 @@ public class SystemRoutes extends RouteBuilder {
         // 从DB查询全部流程，入口条件：无
         from("direct:listFlowsFromDB")
                 .log("从数据库装入已存在的流程 {{flow.server}}")
-                .setBody(simple("SELECT ROUTE_ID as 'routeId', FLOW_SERVER as 'server', FLOW_URI as 'uri', FLOW_GROUP as 'group', FLOW_DESC as 'desc', FLOW_JSON as 'json' FROM flowdb.T_FLOWS WHERE FLOW_SERVER = '{{flow.server}}'"))
+                .setBody(simple("SELECT ROUTE_ID as 'routeId', FLOW_SERVER as 'server', FLOW_URI as 'uri', FLOW_GROUP as 'group', FLOW_DESC as 'desc', FLOW_JSON as 'json' FROM T_FLOWS WHERE FLOW_SERVER = '{{flow.server}}'"))
                 .log(LoggingLevel.DEBUG, "\nSQL >>> ${body}")
                 .to("jdbc:dataSource");
 
         // 从DB查询流程，入口条件: ${header.routeId}
         from("direct:getFlowFromDB")
-                .setBody(simple("SELECT ROUTE_ID, FLOW_SERVER, FLOW_URI, FLOW_GROUP, FLOW_DESC, FLOW_JSON, CREATE_TIME, UPDATE_TIME FROM flowdb.T_FLOWS " +
+                .setBody(simple("SELECT ROUTE_ID, FLOW_SERVER, FLOW_URI, FLOW_GROUP, FLOW_DESC, FLOW_JSON, CREATE_TIME, UPDATE_TIME FROM T_FLOWS " +
                         "WHERE ROUTE_ID = '${header.data[routeId]}'"))
                 .log(LoggingLevel.DEBUG, "\ngetFlowFromDB\nSQL >>> ${body}")
                 .to("jdbc:dataSource");
 //
         // 插入新流程
         from("direct:addFlowToDB")
-                .setBody(simple("INSERT INTO flowdb.T_FLOWS (ROUTE_ID, FLOW_SERVER, FLOW_URI, FLOW_GROUP, FLOW_DESC, FLOW_JSON, CREATE_TIME, UPDATE_TIME)" +
-                        " VALUES ('${header.data[routeId]}', '{{flow.server}}', '${header.data[uri]}', '${header.data[group]}', '${header.data[desc]}', '${header.data[json]}', now(), now())"))
+                .setBody(simple("INSERT INTO T_FLOWS (ROUTE_ID, FLOW_SERVER, FLOW_URI, FLOW_GROUP, FLOW_DESC, FLOW_JSON, CREATE_TIME, UPDATE_TIME)" +
+                        " VALUES ('${header.data[routeId]}', '{{flow.server}}', '${header.data[uri]}', '${header.data[group]}', '${header.data[desc]}', :?data_json, now(), now())"))
                 .log(LoggingLevel.DEBUG, "\naddFlowToDB\nSQL >>> ${body}")
-                .to("jdbc:dataSource");
+                .to("jdbc:dataSource?useHeadersAsParameters=true");
 //
         // 更新新流程
         from("direct:modifyFlowToDB")
-                .setBody(simple("UPDATE flowdb.T_FLOWS SET FLOW_SERVER = '{{flow.server}}', FLOW_URI = '${header.data[uri]}', FLOW_GROUP = '${header.data[group]}', FLOW_DESC = '${header.data[desc]}'," +
-                        "FLOW_JSON = '${header.data[json]}', UPDATE_TIME = now() WHERE ROUTE_ID = '${header.data[routeId]}'"))
+                .setBody(simple("UPDATE T_FLOWS SET FLOW_SERVER = '{{flow.server}}', FLOW_URI = '${header.data[uri]}', FLOW_GROUP = '${header.data[group]}', FLOW_DESC = '${header.data[desc]}'," +
+                        "FLOW_JSON = :?data_json, UPDATE_TIME = now() WHERE ROUTE_ID = '${header.data[routeId]}'"))
                 .log(LoggingLevel.DEBUG, "\nmodifyFlowToDB\nSQL >>> ${body}")
-                .to("jdbc:dataSource");
+                .to("jdbc:dataSource?useHeadersAsParameters=true");
 //
         // 删除流程
         from("direct:removeFlowToDB")
-                .setBody(simple("DELETE FROM flowdb.T_FLOWS WHERE ROUTE_ID = '${header.routeId}'"))
+                .setBody(simple("DELETE FROM T_FLOWS WHERE ROUTE_ID = '${header.routeId}'"))
                 .log(LoggingLevel.INFO, "\nremoveFlowToDB\nSQL >>> ${body}")
                 .to("jdbc:dataSource");
 
@@ -204,22 +204,26 @@ public class SystemRoutes extends RouteBuilder {
                 .to("direct:listFlowsFromDB")
                 .split(simple("${body}"))
                 .log(LoggingLevel.DEBUG, "\nbody >>> \n${body}")
-                .setBody(simple("${body[json]}"))
-                .transform().groovy("new String(Base64.getDecoder().decode(body.getBytes('UTF-8')))")
-                .filter().simple("${body} != null && ${body.length} > 0")
                 .log(LoggingLevel.INFO, "数据来源：DB")
+                .log(LoggingLevel.INFO, "数据ID：${body[routeId]}")
+                .setBody(simple("${body[json]}"))
+                .filter(groovy("!body.startsWith('{')")).transform().groovy("new String(Base64.getDecoder().decode(body.getBytes('UTF-8')))")
+                .end()
+                .filter().simple("${body} != null && ${body.length} > 0")
                 .log(LoggingLevel.DEBUG, "---deploy-- \n${body}")
                 .transform().method("deployService", "deploy")
+                .end()
                 .routeGroup("系统流程").description("数据库部署流程").routeId("DeployFlowFromDB");
 
         // 保存数据库
         from("direct:saveFlowToDB")
                 .bean("deployService", "getFlow")
-                .claimCheck().operation("SET").key("flow")
-                .setBody(simple("${body[flow]}"))
-                .transform().groovy("Base64.getEncoder().encodeToString(body.getBytes('UTF-8'))")
-                .setHeader("flow", simple("${body}"))
-                .claimCheck().operation("GET").key("flow")
+//                .claimCheck().operation("SET").key("flow")
+                .setHeader("data_json", simple("${body[flow]}"))
+//                .setBody(simple("${body[flow]}"))
+//                .transform().groovy("Base64.getEncoder().encodeToString(body.getBytes('UTF-8'))")
+//                .setHeader("flow", simple("${body}"))
+//                .claimCheck().operation("GET").key("flow")
                 .setHeader("data", groovy("[routeId:body.routeId, uri:body.uri, group:body.group, desc:body.desc, json:headers.flow]"))
                 .log(LoggingLevel.DEBUG, "\nFor Query\n ${header.data}")
                 .to("direct:getFlowFromDB")
