@@ -16,13 +16,13 @@ public class ToNode extends FlowNode {
         Map<String, Object> props = (Map<String, Object>) node.get("props");
         String uri = (String) props.get("uri");
 
-        rd.process(new Processor() {
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                Object body = exchange.getMessage().getBody();
-                System.out.println("LOG TO >>> uri = " + uri + ", body class = " + body.getClass().getName());
-            }
-        });
+//        rd.process(new Processor() {
+//            @Override
+//            public void process(Exchange exchange) throws Exception {
+//                Object body = exchange.getMessage().getBody();
+//                System.out.println("LOG TO >>> uri = " + uri + ", body class = " + body.getClass().getName());
+//            }
+//        });
 
         rd.toD(uri);
         log.info("创建 to 节点");
