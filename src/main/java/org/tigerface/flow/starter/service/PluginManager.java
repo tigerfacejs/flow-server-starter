@@ -47,6 +47,8 @@ public class PluginManager {
             FlowNodeFactory.register("timer", TimerFromNode.class);
             FlowNodeFactory.register("fromRabbitmq", RabbitMQFromNode.class);
             FlowNodeFactory.register("toRabbitmq", RabbitMQNode.class);
+            FlowNodeFactory.register("fromWebSocket", WebSocketFromNode.class);
+            FlowNodeFactory.register("toWebSocket", WebSocketNode.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
