@@ -27,7 +27,7 @@ public class Flow {
     String desc;
     List<Map> nodes = new ArrayList<>();
 
-    String getUri() {
+    public String getUri() {
         if (_entry == null) {
             synchronized (this) {
                 if (nodes.size() > 0) {
@@ -52,7 +52,7 @@ public class Flow {
         // do nothing
     }
 
-    String getRouteId() throws UnsupportedEncodingException {
+    public String getRouteId() throws UnsupportedEncodingException {
         return this.currentServer + "_" + Base64.getUrlEncoder().encodeToString(this.getUri().getBytes("utf-8"));
     }
 
@@ -60,7 +60,7 @@ public class Flow {
         // do nothing
     }
 
-    Map toMap() throws UnsupportedEncodingException {
+    public Map toMap() throws UnsupportedEncodingException {
         return new HashMap() {{
             put("routeId", getRouteId());
             put("uri", getUri());

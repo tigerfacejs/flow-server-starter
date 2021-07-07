@@ -1,6 +1,5 @@
 package org.tigerface.flow.starter.service
 
-import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.camel.Exchange
@@ -20,7 +19,7 @@ import java.text.SimpleDateFormat
  */
 
 @Slf4j
-class FlowBuilder implements ApplicationContextAware {
+public class FlowBuilder implements ApplicationContextAware {
     @Value('${flow.server}')
     private String currentServer;
 
