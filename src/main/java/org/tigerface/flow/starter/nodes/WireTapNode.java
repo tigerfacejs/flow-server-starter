@@ -12,13 +12,25 @@ import java.util.Map;
 public class WireTapNode extends FlowNode {
 
     @Override
-    public <T extends ProcessorDefinition<T>>T createAndAppend(Map<String, Object> node, T rd) {
+    public <T extends ProcessorDefinition<T>> T createAndAppend(Map<String, Object> node, T rd) {
         Map<String, Object> props = (Map<String, Object>) node.get("props");
+        Object copy = props.get("copy");
 
-        WireTapDefinition wtd = rd.wireTap((String)props.get("uri"));
-        wtd.newExchangeBody(Exp.create((Map<String, Object>) props.get("body")));
-        for (Map header : (List<Map>)props.get("headers")) {
-            wtd.newExchangeHeader((String)header.get("header"), Exp.create(header));
+        WireTapDefinition wtd = rd.wireTap((String) props.get("uri"));
+        if (copy != null && copy.toString().equalsIgnoreCase("true")) {
+            wtd = wtd.copy(true);
+        } else {
+            wtd = wtd.copy(false);
+        }
+
+        Map body = (Map<String, Object>) props.get("body");
+        if (body != null && body.get("script") != null && body.get("script").toString().length() > 0) {
+            wtd = wtd.newExchangeBody(Exp.create(body));
+        }
+        for (Map header : (List<Map>) props.get("headers")) {
+            if (header != null && header.get("script") != null && header.get("script").toString().length() > 0) {
+                wtd = wtd.newExchangeHeader((String) header.get("header"), Exp.create(header));
+            }
         }
         log.info("创建 wireTap 节点");
 
