@@ -1,8 +1,7 @@
 package org.tigerface.flow.starter.config;
 
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.jdbc.BeanRowMapper;
-import org.apache.camel.component.jdbc.DefaultBeanRowMapper;
+import org.apache.camel.language.groovy.GroovyShellFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.tigerface.flow.starter.route.SystemRoutes;
@@ -20,6 +19,11 @@ public class FlowServerAutoConfig {
     public FlowBuilder flowBuilder() {
         PluginManager.init();
         return new FlowBuilder();
+    }
+
+    @Bean
+    public GroovyShellFactory groovyShellFactory() {
+        return new CustomGroovyShellFactory();
     }
 
     @Bean

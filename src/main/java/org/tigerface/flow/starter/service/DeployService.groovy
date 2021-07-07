@@ -2,7 +2,6 @@ package org.tigerface.flow.starter.service
 
 import groovy.util.logging.Slf4j;
 import org.apache.camel.CamelContext
-import org.apache.camel.FluentProducerTemplate;
 import org.apache.camel.Route
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext
@@ -165,8 +164,8 @@ public class DeployService {
                 ];
             }
         } catch (RuntimeException e) {
-            // ignore
-            e.printStackTrace();
+            log.error("获取流程信息时发生异常\n{}", e.getMessage(), e);
+//            e.printStackTrace();
         }
         return new HashMap();
     }

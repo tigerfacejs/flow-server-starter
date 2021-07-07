@@ -4,20 +4,17 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.camel.builder.RouteBuilder;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.tigerface.flow.starter.nodes.EntryNode;
-import org.tigerface.flow.starter.nodes.FlowNode;
 import org.tigerface.flow.starter.service.FlowNodeFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URLEncoder;
 import java.util.*;
 
 @Data
+@Slf4j
 public class Flow {
     private String currentServer;
 
@@ -41,16 +38,9 @@ public class Flow {
                         Constructor constructor = clazz.getConstructor();
                         EntryNode nodeObj = (EntryNode) constructor.newInstance();
                         this._entry = nodeObj.getUri(node);
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    } catch (NoSuchMethodException e) {
-                        e.printStackTrace();
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    } catch (InstantiationException e) {
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                    } catch (Exception e) {
+                        log.error("解析流程时发生异常\n{}", e.getMessage(), e);
+//            e.printStackTrace();
                     }
                 } else throw new RuntimeException("空流程");
             }

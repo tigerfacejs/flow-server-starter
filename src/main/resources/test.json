@@ -1,0 +1,31 @@
+{
+    "code": 200,
+    "success": true,
+    "data": {
+        "id": "1412390904517451777",
+        "createUser": "1265281503005249538",
+        "createDept": "1265281500367032321",
+        "createTime": "2021-07-06 20:40:07",
+        "updateUser": "1265281503005249538",
+        "updateTime": "2021-07-06 20:40:07",
+        "status": 1,
+        "isDeleted": 0,
+        "tenantId": "928078",
+        "qrCodeType": 0,
+        "remark": "客户111",
+        "tag": [
+            "etlqDQBwAAHu147U5i3nue7EQ3UcWOvA",
+            "etlqDQBwAAbPQv_hxHFwUpRHFdhB7pQQ",
+            "etlqDQBwAAf2eI5hGowWA2cAsn3p5uYg"
+        ],
+        "qrCode": "https://wework.qpic.cn/wwpic/544142_F7g8BGRiTFG1sM7_1625575207/0",
+        "skipVerify": true,
+        "state": "1265281503005249538:5",
+        "configId": "90709583a5e0a88401675f61c5c730a1",
+        "type": -1,
+        "scene": -1,
+        "user": "",
+        "skip_verify": false
+    },
+    "msg": "操作成功"
+}
