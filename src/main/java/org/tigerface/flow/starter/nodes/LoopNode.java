@@ -22,7 +22,7 @@ public class LoopNode extends FlowNode {
         Map<String, Object> props = (Map<String, Object>) node.get("props");
 
         String type = (String) props.get("type");
-        boolean copy = props.get("copy") != null ? (props.get("copy").toString() == "true") : false;
+        boolean copy = props.get("copy") != null ? "true".equalsIgnoreCase(props.get("copy").toString()) : false;
 
         Map loop = (Map) props.get("loop");
 
