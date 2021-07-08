@@ -22,6 +22,7 @@ public class LoopNode extends FlowNode {
         Map<String, Object> props = (Map<String, Object>) node.get("props");
 
         String type = (String) props.get("type");
+        boolean copy = props.get("copy") != null ? (props.get("copy").toString() == "true") : false;
 
         Map loop = (Map) props.get("loop");
 
@@ -34,6 +35,9 @@ public class LoopNode extends FlowNode {
             ld = rd.loopDoWhile(whileExp);
         } else throw new RuntimeException("不能创建的循环类型 " + type);
 
+        if (copy) ld.copy();
+        ld.breakOnShutdown();
+
         List<Map> nodes = (List<Map>) loop.get("nodes");
         if (!nodes.isEmpty()) {
             for (Map sub : nodes) {
@@ -41,6 +45,8 @@ public class LoopNode extends FlowNode {
                 ld = (LoopDefinition) factory.createAndAppend(sub, ld);
             }
         }
+
+        ld.end();
 
         log.info("创建 Loop 节点");
 

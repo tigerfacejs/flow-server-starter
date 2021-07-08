@@ -3,8 +3,8 @@ package org.tigerface.flow.starter.service;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Route;
+import org.apache.camel.ServiceStatus;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.impl.DefaultCamelContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.tigerface.flow.starter.domain.Flow;
@@ -48,18 +48,24 @@ public class DeployService {
         boolean ret = remove(id);
         log.info("尝试移除现有流程: " + ret);
 
-        RouteBuilder routeBuilder = flowBuilder.build(flow);
+        if (ret) {
+            RouteBuilder routeBuilder = flowBuilder.build(flow);
 
-        log.info("部署...");
-        camelContext.addRoutes(routeBuilder);
-        log.info("------ end ------\n");
+            log.info("部署...");
+            camelContext.addRoutes(routeBuilder);
+            log.info("------ end ------\n");
+        }
         return id;
     }
 
     boolean remove(String id) throws Exception {
-        if (camelContext.getRoute(id) != null) {
+        Route route = camelContext.getRoute(id);
+        if (route != null) {
             log.info("流程已存在：{}", id);
-            ((DefaultCamelContext) camelContext).stopRoute(id);
+            ServiceStatus status = camelContext.getRouteController().getRouteStatus(id);
+            if (!status.isStopped()) {
+                camelContext.getRouteController().stopRoute(id);
+            }
             return camelContext.removeRoute(id);
         }
         return true;
