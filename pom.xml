@@ -16,7 +16,7 @@
     <properties>
         <java.version>1.8</java.version>
         <lombok.version>1.18.20</lombok.version>
-        <camel.version>3.10.0</camel.version>
+        <camel.version>3.11.0</camel.version>
         <grovvy.version>3.0.7</grovvy.version>
         <mysql.version>8.0.24</mysql.version>
     </properties>
@@ -214,53 +214,53 @@
                     </archive>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.gmavenplus</groupId>
-                <artifactId>gmavenplus-plugin</artifactId>
-                <version>1.12.1</version>
-                <configuration>
-                    <sources>
-                        <source>
-                            <directory>${project.basedir}/src/main/java</directory>
-                            <includes>
-                                <include>**/*.groovy</include>
-                            </includes>
-                        </source>
-                    </sources>
-                    <testSources>
-                        <testSource>
-                            <directory>${project.basedir}/src/test/java</directory>
-                            <includes>
-                                <include>**/*.groovy</include>
-                            </includes>
-                        </testSource>
-                    </testSources>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>execute</goal>
-                            <goal>addSources</goal>
-                            <goal>addTestSources</goal>
-                            <goal>generateStubs</goal>
-                            <goal>compile</goal>
-                            <goal>generateTestStubs</goal>
-                            <goal>compileTests</goal>
-                            <goal>removeStubs</goal>
-                            <goal>removeTestStubs</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.codehaus.groovy</groupId>
-                        <artifactId>groovy-all</artifactId>
-                        <version>${grovvy.version}</version>
-                        <scope>runtime</scope>
-                        <type>pom</type>
-                    </dependency>
-                </dependencies>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.codehaus.gmavenplus</groupId>-->
+<!--                <artifactId>gmavenplus-plugin</artifactId>-->
+<!--                <version>1.12.1</version>-->
+<!--                <configuration>-->
+<!--                    <sources>-->
+<!--                        <source>-->
+<!--                            <directory>${project.basedir}/src/main/java</directory>-->
+<!--                            <includes>-->
+<!--                                <include>**/*.groovy</include>-->
+<!--                            </includes>-->
+<!--                        </source>-->
+<!--                    </sources>-->
+<!--                    <testSources>-->
+<!--                        <testSource>-->
+<!--                            <directory>${project.basedir}/src/test/java</directory>-->
+<!--                            <includes>-->
+<!--                                <include>**/*.groovy</include>-->
+<!--                            </includes>-->
+<!--                        </testSource>-->
+<!--                    </testSources>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>execute</goal>-->
+<!--                            <goal>addSources</goal>-->
+<!--                            <goal>addTestSources</goal>-->
+<!--                            <goal>generateStubs</goal>-->
+<!--                            <goal>compile</goal>-->
+<!--                            <goal>generateTestStubs</goal>-->
+<!--                            <goal>compileTests</goal>-->
+<!--                            <goal>removeStubs</goal>-->
+<!--                            <goal>removeTestStubs</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--                <dependencies>-->
+<!--                    <dependency>-->
+<!--                        <groupId>org.codehaus.groovy</groupId>-->
+<!--                        <artifactId>groovy-all</artifactId>-->
+<!--                        <version>${grovvy.version}</version>-->
+<!--                        <scope>runtime</scope>-->
+<!--                        <type>pom</type>-->
+<!--                    </dependency>-->
+<!--                </dependencies>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>

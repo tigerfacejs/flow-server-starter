@@ -17,10 +17,10 @@ public class WireTapNode extends FlowNode {
         Object copy = props.get("copy");
 
         WireTapDefinition wtd = rd.wireTap((String) props.get("uri"));
-        if (copy != null && copy.toString().equalsIgnoreCase("true")) {
-            wtd = wtd.copy(true);
-        } else {
+        if (copy != null && copy.toString().equalsIgnoreCase("false")) {
             wtd = wtd.copy(false);
+        } else {
+            wtd = wtd.copy(true);
         }
 
         Map body = (Map<String, Object>) props.get("body");
