@@ -65,7 +65,6 @@ public class SystemRoutes extends RouteBuilder {
                 .apiProperty("api.title", "Flow Server").apiProperty("api.version", "1.0.0")
                 .apiProperty("cors", "true");
 
-
         // 基础流程，系统基本状态
         rest("/").get().description("引导入口").route()
                 .transform().simple("这是一个 Flow Server，你可以通过 POST ../deploy 来部署一个流程。")
@@ -152,6 +151,11 @@ public class SystemRoutes extends RouteBuilder {
                 .group("系统流程").description("部署主流程").id("MainDeployFlow")
                 .log(LoggingLevel.DEBUG, "---deploy-- \n${body}")
                 .bean("deployService", "deploy");
+
+        // 语法检查
+        rest("/groovySyntaxCheck").post().route()
+                .bean("deployService", "syntaxCheck")
+                .group("系统流程").setId("groovySyntaxCheck");
 
         // 从DB查询全部流程，入口条件：无
         from("direct:listFlowsFromDB")

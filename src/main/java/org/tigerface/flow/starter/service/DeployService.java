@@ -1,5 +1,6 @@
 package org.tigerface.flow.starter.service;
 
+import groovy.lang.GroovyShell;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Route;
@@ -32,7 +33,7 @@ public class DeployService {
      * @return
      * @throws Exception
      */
-    String deploy(String flowJson) throws Exception {
+    public String deploy(String flowJson) throws Exception {
         log.info("------ 准备部署流程 ------");
         log.info("服务器: " + flowServer);
         log.info("解析...");
@@ -58,7 +59,7 @@ public class DeployService {
         return id;
     }
 
-    boolean remove(String id) throws Exception {
+    public boolean remove(String id) throws Exception {
         Route route = camelContext.getRoute(id);
         if (route != null) {
             log.info("流程已存在：{}", id);
@@ -112,7 +113,7 @@ public class DeployService {
         return (Map) index.get(groupNames);
     }
 
-    Object listFlows() {
+    public Object listFlows() {
         List<Route> routes = camelContext.getRoutes();
         Map<String, Map> index = new HashMap<>();
         for (Route route : routes) {
@@ -140,7 +141,7 @@ public class DeployService {
         return result;
     }
 
-    Object listDirectFlows() {
+    public Object listDirectFlows() {
         List<Route> routes = camelContext.getRoutes();
         List<Map> flows = new ArrayList<>();
         for (Route route : routes) {
@@ -186,11 +187,22 @@ public class DeployService {
         return new HashMap();
     }
 
-    Map getFlow(String id) throws UnsupportedEncodingException {
+    public Map getFlow(String id) throws UnsupportedEncodingException {
         Route route = camelContext.getRoute(id);
         if (route != null) {
             return getRouteInfo(route);
         }
         return new HashMap();
+    }
+
+    public String syntaxCheck(String script) {
+        final ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+        GroovyShell groovyShell = new GroovyShell(tccl);
+        try {
+            groovyShell.parse(script);
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+        return "OK";
     }
 }
