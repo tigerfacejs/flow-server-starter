@@ -7,6 +7,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.ProcessorDefinition;
 import org.tigerface.flow.starter.domain.Flow;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -30,17 +31,6 @@ public class FromNode extends EntryNode {
 //                System.out.println("LOG >>> routeUri = "+exchange.getFromEndpoint().getEndpointUri()+", exchangeId = " + exchange.getExchangeId());
 //            }
 //        });
-
-        Map<String, Object> props = (Map<String, Object>) node.get("props");
-        Map<String, Object> micrometer = (Map<String, Object>) props.get("micrometer");
-        if (micrometer != null) {
-            String metricsType = (String) micrometer.get("metricsType");
-            String metricsName = (String) micrometer.get("metricsName");
-
-            if (metricsName != null && metricsName.length() > 0) {
-                newRouteDef.to("micrometer:" + metricsType + ":" + metricsName);
-            }
-        }
 
         log.info("创建 from 节点");
         return (T) newRouteDef;
