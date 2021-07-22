@@ -19,6 +19,7 @@
         <camel.version>3.11.0</camel.version>
         <grovvy.version>3.0.7</grovvy.version>
         <mysql.version>8.0.24</mysql.version>
+        <micrometer.version>1.7.2</micrometer.version>
     </properties>
     <dependencies>
         <dependency>
@@ -203,6 +204,11 @@
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
             <version>${micrometer.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient</artifactId>
+            <version>0.11.0</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>

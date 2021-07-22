@@ -51,9 +51,18 @@ public class FlowBuilder implements ApplicationContextAware {
             public void configure() throws Exception {
                 FlowNodeFactory factory = new FlowNodeFactory(this);
                 RouteDefinition rd = null;
+                boolean timerStarted = false;
                 for (Map node : flow.getNodes()) {
                     node.put("flow", flow);
+                    if (flow.getMicrometerId() != null && flow.getMicrometerId().length() > 0 && rd != null && !timerStarted) {
+                        rd.to("micrometer:counter:" + flow.getMicrometerId()+"_counter");
+                        rd.to("micrometer:timer:" + flow.getMicrometerId()+"_timer?action=start");
+                        timerStarted = true;
+                    }
                     rd = factory.createAndAppend(node, rd);
+                }
+                if(timerStarted) {
+                    rd.to("micrometer:timer:" + flow.getMicrometerId()+"_timer?action=stop");
                 }
                 rd.routeId(flow.getRouteId());
                 rd.routeDescription(flow.getJson());

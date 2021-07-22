@@ -25,6 +25,7 @@ public class Flow {
     String json;
     String group;
     String desc;
+    String micrometerId;
     List<Map> nodes = new ArrayList<>();
 
     public String getUri() {
@@ -66,6 +67,7 @@ public class Flow {
             put("uri", getUri());
             put("group", group);
             put("desc", desc);
+            put("micrometerId", micrometerId);
             put("nodes", nodes);
         }};
     }
