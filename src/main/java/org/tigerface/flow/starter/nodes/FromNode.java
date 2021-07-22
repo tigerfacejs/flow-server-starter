@@ -31,6 +31,17 @@ public class FromNode extends EntryNode {
 //            }
 //        });
 
+        Map<String, Object> props = (Map<String, Object>) node.get("props");
+        Map<String, Object> micrometer = (Map<String, Object>) props.get("micrometer");
+        if (micrometer != null) {
+            String metricsType = (String) micrometer.get("metricsType");
+            String metricsName = (String) micrometer.get("metricsName");
+
+            if (metricsName != null && metricsName.length() > 0) {
+                newRouteDef.to("micrometer:" + metricsType + ":" + metricsName);
+            }
+        }
+
         log.info("创建 from 节点");
         return (T) newRouteDef;
     }

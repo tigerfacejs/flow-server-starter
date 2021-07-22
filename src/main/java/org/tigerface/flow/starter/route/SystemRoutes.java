@@ -148,6 +148,7 @@ public class SystemRoutes extends RouteBuilder {
 
         // 部署主流程
         from("direct:deploy")
+                .to("micrometer:counter:deployCounter")
                 .group("系统流程").description("部署主流程").id("MainDeployFlow")
                 .log(LoggingLevel.DEBUG, "---deploy-- \n${body}")
                 .bean("deployService", "deploy");
