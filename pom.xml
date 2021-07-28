@@ -20,8 +20,14 @@
         <grovvy.version>3.0.7</grovvy.version>
         <mysql.version>8.0.24</mysql.version>
         <micrometer.version>1.7.2</micrometer.version>
+        <derby.version>10.15.2.0</derby.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>${derby.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
