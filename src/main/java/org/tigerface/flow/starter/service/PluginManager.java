@@ -1,9 +1,12 @@
 package org.tigerface.flow.starter.service;
 
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
 import org.tigerface.flow.starter.nodes.*;
 
 public class PluginManager {
-    public static void init() {
+    public static void init(ApplicationContext applicationContext) {
+        PluginManager.context = applicationContext;
         try {
             FlowNodeFactory.register("from", FromNode.class);
             FlowNodeFactory.register("claimCheck", ClaimCheckNode.class);
@@ -53,5 +56,19 @@ public class PluginManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    static private ApplicationContext context;
+
+    static public ApplicationContext getApplicationContext() {
+        return context;
+    }
+
+    static public void autowireBean(Object bean) {
+        context.getAutowireCapableBeanFactory().autowireBean(bean);
+    }
+
+    static public <T> T getBean(Class<T> clazz) {
+        return context.getBean(clazz);
     }
 }

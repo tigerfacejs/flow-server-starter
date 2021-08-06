@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.tigerface.flow</groupId>
     <artifactId>flow-server-starter</artifactId>
-    <version>0.0.15-SNAPSHOT</version>
+    <version>0.0.16-SNAPSHOT</version>
     <name>flow-server-starter</name>
     <description>Demo project for Spring Boot</description>
     <properties>
@@ -23,18 +23,10 @@
         <derby.version>10.15.2.0</derby.version>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <version>${derby.version}</version>
-        </dependency>
+        <!-- 核心依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -46,21 +38,33 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-        <!--                <dependency>-->
-        <!--                    <groupId>org.apache.camel.springboot</groupId>-->
-        <!--                    <artifactId>camel-spring-boot-starter</artifactId>-->
-        <!--                    <version>${camel.version}</version>-->
-        <!--                </dependency>-->
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-spring-boot-starter</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
+        <!-- 监控使用 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.derby</groupId>-->
+<!--            <artifactId>derby</artifactId>-->
+<!--            <version>${derby.version}</version>-->
+<!--        </dependency>-->
+
+        <!-- TODO: 临时解决 loop 未执行前停止会报 NullPoint 的 bug，发布 3.12.0 正式版后要及时替换 -->
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core-processor</artifactId>
             <version>3.12.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-spring-boot</artifactId>
-            <version>${camel.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.camel.springboot</groupId>-->
+<!--            <artifactId>camel-spring-boot</artifactId>-->
+<!--            <version>${camel.version}</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-rest-starter</artifactId>
@@ -92,8 +96,8 @@
             <version>${camel.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-http</artifactId>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-http-starter</artifactId>
             <version>${camel.version}</version>
         </dependency>
         <dependency>
@@ -121,14 +125,14 @@
             <artifactId>camel-barcode-starter</artifactId>
             <version>${camel.version}</version>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.camel</groupId>-->
-        <!--            <artifactId>camel-mongodb</artifactId>-->
-        <!--            <version>${camel.version}</version>-->
-        <!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.camel.springboot</groupId>-->
+<!--            <artifactId>camel-mongodb-starter</artifactId>-->
+<!--            <version>${camel.version}</version>-->
+<!--        </dependency>-->
         <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-spring-redis</artifactId>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-spring-redis-starter</artifactId>
             <version>${camel.version}</version>
         </dependency>
         <dependency>
@@ -172,8 +176,8 @@
             <version>${camel.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-elasticsearch-rest</artifactId>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-elasticsearch-rest-starter</artifactId>
             <version>${camel.version}</version>
         </dependency>
         <dependency>
@@ -192,8 +196,8 @@
             <version>${camel.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-git</artifactId>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-git-starter</artifactId>
             <version>${camel.version}</version>
         </dependency>
         <dependency>

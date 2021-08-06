@@ -4,11 +4,10 @@ import groovy.lang.GroovyClassLoader;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Expression;
-import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.model.ChoiceDefinition;
 import org.apache.camel.model.ProcessorDefinition;
 import org.apache.camel.model.SplitDefinition;
 import org.tigerface.flow.starter.service.FlowNodeFactory;
+import org.tigerface.flow.starter.service.PluginManager;
 
 import java.util.List;
 import java.util.Map;
@@ -33,6 +32,8 @@ public class SplitNode extends FlowNode {
 
             try {
                 Object aggregator = aggregationStrategyClazz.newInstance();
+                PluginManager.autowireBean(aggregator);
+
                 sd = rd.split(splitExp, (AggregationStrategy) aggregator);
             } catch (Exception e) {
                 e.printStackTrace();

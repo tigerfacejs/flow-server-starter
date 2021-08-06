@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.ProcessorDefinition;
+import org.tigerface.flow.starter.service.PluginManager;
 
 import java.util.Map;
 
@@ -24,6 +25,8 @@ public class EnrichNode extends FlowNode {
 
             try {
                 Object aggregator = aggregationStrategyClazz.newInstance();
+                PluginManager.autowireBean(aggregator);
+
                 rd.enrich(uri, (AggregationStrategy) aggregator);
             } catch (Exception e) {
                 e.printStackTrace();

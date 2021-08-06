@@ -2,27 +2,29 @@ package org.tigerface.flow.starter.config;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.language.groovy.GroovyShellFactory;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.tigerface.flow.starter.route.SystemRoutes;
 import org.tigerface.flow.starter.service.DeployService;
 import org.tigerface.flow.starter.service.FlowBuilder;
 import org.tigerface.flow.starter.service.PluginManager;
 import org.tigerface.flow.starter.service.TerminalService;
 
-import javax.sql.DataSource;
-
 @Configuration
 //@ConditionalOnClass(RestRoute.class)
 //@ConditionalOnMissingBean(type="org.apache.camel.CamelContext")
-public class FlowServerAutoConfig {
+public class FlowServerAutoConfig implements ApplicationContextAware {
+
+    @Autowired
+    ApplicationContext applicationContext;
 
     @Bean
     public FlowBuilder flowBuilder() {
-        PluginManager.init();
+        PluginManager.init(this.applicationContext);
         return new FlowBuilder();
     }
 
@@ -46,12 +48,17 @@ public class FlowServerAutoConfig {
         return new SystemRoutes();
     }
 
-    @Primary
-    @Bean(name = "dataSource")
-    @ConfigurationProperties(prefix = "spring.datasource")
-    public DataSource dataSource() {
-        return DataSourceBuilder.create().build();
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
+
+//    @Primary
+//    @Bean(name = "dataSource")
+//    @ConfigurationProperties(prefix = "spring.datasource")
+//    public DataSource dataSource() {
+//        return DataSourceBuilder.create().build();
+//    }
 
 //    @Bean(name = "flowDS")
 //    public DataSource flowDS() {

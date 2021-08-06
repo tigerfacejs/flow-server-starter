@@ -1,14 +1,10 @@
 package org.tigerface.flow.starter.nodes;
 
-import groovy.lang.GroovyClassLoader;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Expression;
 import org.apache.camel.Predicate;
-import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.LoopDefinition;
 import org.apache.camel.model.ProcessorDefinition;
-import org.apache.camel.model.SplitDefinition;
 import org.tigerface.flow.starter.service.FlowNodeFactory;
 
 import java.util.List;

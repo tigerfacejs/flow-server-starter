@@ -6,6 +6,7 @@ import org.apache.camel.AggregationStrategy;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.MulticastDefinition;
 import org.apache.camel.model.ProcessorDefinition;
+import org.tigerface.flow.starter.service.PluginManager;
 
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,8 @@ public class MulticastNode extends FlowNode {
 
                 try {
                     Object aggregator = aggregationStrategyClazz.newInstance();
+                    PluginManager.autowireBean(aggregator);
+
                     md = rd.multicast((AggregationStrategy) aggregator);
                 } catch (Exception e) {
                     e.printStackTrace();

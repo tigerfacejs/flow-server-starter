@@ -8,6 +8,7 @@ import org.apache.camel.Predicate;
 import org.apache.camel.model.AggregateDefinition;
 import org.apache.camel.model.ProcessorDefinition;
 import org.tigerface.flow.starter.service.FlowNodeFactory;
+import org.tigerface.flow.starter.service.PluginManager;
 
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,8 @@ public class AggregateNode extends FlowNode {
 
             try {
                 Object aggregator = aggregationStrategyClazz.newInstance();
+                PluginManager.autowireBean(aggregator);
+
                 ad = rd.aggregate(correlationExp, (AggregationStrategy) aggregator).completion(completionPredicate);
             } catch (Exception e) {
                 e.printStackTrace();

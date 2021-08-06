@@ -7,6 +7,7 @@ import org.apache.camel.Expression;
 import org.apache.camel.model.MulticastDefinition;
 import org.apache.camel.model.ProcessorDefinition;
 import org.apache.camel.model.RecipientListDefinition;
+import org.tigerface.flow.starter.service.PluginManager;
 
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,8 @@ public class RecipientListNode extends FlowNode {
 
             try {
                 Object aggregator = aggregationStrategyClazz.newInstance();
+                PluginManager.autowireBean(aggregator);
+
                 rld = rd.recipientList(expression).aggregationStrategy((AggregationStrategy) aggregator);
             } catch (Exception e) {
                 e.printStackTrace();
