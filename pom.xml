@@ -16,7 +16,7 @@
     <properties>
         <java.version>1.8</java.version>
         <lombok.version>1.18.20</lombok.version>
-        <camel.version>3.11.0</camel.version>
+        <camel.version>3.11.1</camel.version>
         <grovvy.version>3.0.7</grovvy.version>
         <mysql.version>8.0.24</mysql.version>
         <micrometer.version>1.7.2</micrometer.version>
@@ -54,12 +54,12 @@
 <!--            <version>${derby.version}</version>-->
 <!--        </dependency>-->
 
-        <!-- TODO: 临时解决 loop 未执行前停止会报 NullPoint 的 bug，发布 3.12.0 正式版后要及时替换 -->
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-core-processor</artifactId>
-            <version>3.12.0-SNAPSHOT</version>
-        </dependency>
+<!--        &lt;!&ndash; TODO: 临时解决 loop 未执行前停止会报 NullPoint 的 bug，发布 3.12.0 正式版后要及时替换 &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.camel</groupId>-->
+<!--            <artifactId>camel-core-processor</artifactId>-->
+<!--            <version>3.12.0-SNAPSHOT</version>-->
+<!--        </dependency>-->
 <!--        <dependency>-->
 <!--            <groupId>org.apache.camel.springboot</groupId>-->
 <!--            <artifactId>camel-spring-boot</artifactId>-->
