@@ -6,6 +6,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.attachment.Attachment;
 import org.apache.camel.attachment.AttachmentMessage;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -65,6 +66,7 @@ public class AttachmentProcessor implements Processor {
                     return new HashMap<String, Object>() {{
                         put("filename", finalFilename);
                         put("contentType", contentType);
+                        put("inputStream", new BufferedInputStream(attachment.getDataHandler().getInputStream()));
                         put("data", data);
                         put("field", field);
                     }};

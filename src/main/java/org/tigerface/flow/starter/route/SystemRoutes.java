@@ -53,7 +53,7 @@ public class SystemRoutes extends RouteBuilder {
         esComp.setPassword(esPwd);
 
         camelContext.addComponent("elasticsearch-rest", esComp);
-        camelContext.setStreamCaching(true);
+        camelContext.setStreamCaching(false);
 
         restConfiguration()
                 .component("jetty")
