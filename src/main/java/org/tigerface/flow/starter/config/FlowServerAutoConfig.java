@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.tigerface.flow.starter.route.SystemRoutes;
 import org.tigerface.flow.starter.service.DeployService;
 import org.tigerface.flow.starter.service.FlowBuilder;
+import org.tigerface.flow.starter.service.ImageService;
 import org.tigerface.flow.starter.service.PluginManager;
 import org.tigerface.flow.starter.service.TerminalService;
 
@@ -36,6 +37,11 @@ public class FlowServerAutoConfig implements ApplicationContextAware {
     @Bean
     public DeployService deployService() {
         return new DeployService();
+    }
+
+    @Bean
+    public ImageService imageService() {
+        return new ImageService();
     }
 
     @Bean

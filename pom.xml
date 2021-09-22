@@ -10,13 +10,13 @@
     </parent>
     <groupId>org.tigerface.flow</groupId>
     <artifactId>flow-server-starter</artifactId>
-    <version>0.0.16-SNAPSHOT</version>
+    <version>0.0.19-SNAPSHOT</version>
     <name>flow-server-starter</name>
     <description>Demo project for Spring Boot</description>
     <properties>
         <java.version>1.8</java.version>
         <lombok.version>1.18.20</lombok.version>
-        <camel.version>3.11.0</camel.version>
+        <camel.version>3.11.2</camel.version>
         <grovvy.version>3.0.7</grovvy.version>
         <mysql.version>8.0.24</mysql.version>
         <micrometer.version>1.7.2</micrometer.version>
@@ -43,6 +43,11 @@
             <artifactId>camel-spring-boot-starter</artifactId>
             <version>${camel.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-api</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
         <!-- 监控使用 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -54,12 +59,12 @@
         <!--            <version>${derby.version}</version>-->
         <!--        </dependency>-->
 
-        <!-- TODO: 临时解决 loop 未执行前停止会报 NullPoint 的 bug，发布 3.12.0 正式版后要及时替换 -->
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-core-processor</artifactId>
-            <version>3.12.0-SNAPSHOT</version>
-        </dependency>
+<!--        &lt;!&ndash; TODO: 临时解决 loop 未执行前停止会报 NullPoint 的 bug，发布 3.12.0 正式版后要及时替换 &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.camel</groupId>-->
+<!--            <artifactId>camel-core-processor</artifactId>-->
+<!--            <version>3.12.0-SNAPSHOT</version>-->
+<!--        </dependency>-->
         <!--        <dependency>-->
         <!--            <groupId>org.apache.camel.springboot</groupId>-->
         <!--            <artifactId>camel-spring-boot</artifactId>-->
@@ -175,11 +180,11 @@
             <artifactId>camel-spring-jdbc-starter</artifactId>
             <version>${camel.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-elasticsearch-rest-starter</artifactId>
-            <version>${camel.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.camel.springboot</groupId>-->
+<!--            <artifactId>camel-elasticsearch-rest-starter</artifactId>-->
+<!--            <version>${camel.version}</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>

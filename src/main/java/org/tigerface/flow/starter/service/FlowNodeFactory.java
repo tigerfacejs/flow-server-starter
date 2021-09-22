@@ -40,7 +40,7 @@ public class FlowNodeFactory {
             return pd;
         } catch (Exception e) {
             log.error("初始化节点组件 " + node.get("type") + " 对象时发生异常\n{}", e.getMessage(), e);
-//            e.printStackTrace();
+            e.printStackTrace();
         }
         throw new RuntimeException("节点组件 " + node.get("type") + " 实例化失败");
     }

@@ -3,7 +3,7 @@ package org.tigerface.flow.starter.route;
 import org.apache.camel.CamelContext;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.elasticsearch.ElasticsearchComponent;
+//import org.apache.camel.component.elasticsearch.ElasticsearchComponent;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.model.rest.RestParamType;
 import org.springframework.beans.factory.BeanClassLoaderAware;
@@ -36,23 +36,23 @@ public class SystemRoutes extends RouteBuilder {
     @Value("${flow.command.queue}")
     private String commandQueue;
 
-    @Value("${flow.elasticsearch.url}")
-    private String esUrl;
-
-    @Value("${flow.elasticsearch.username:elastic}")
-    private String esUser;
-
-    @Value("${flow.elasticsearch.password}")
-    private String esPwd;
+//    @Value("${flow.elasticsearch.url}")
+//    private String esUrl;
+//
+//    @Value("${flow.elasticsearch.username:elastic}")
+//    private String esUser;
+//
+//    @Value("${flow.elasticsearch.password}")
+//    private String esPwd;
 
     @Override
     public void configure() throws Exception {
-        ElasticsearchComponent esComp = new ElasticsearchComponent();
-        esComp.setHostAddresses(esUrl);
-        esComp.setUser(esUser);
-        esComp.setPassword(esPwd);
+//        ElasticsearchComponent esComp = new ElasticsearchComponent();
+//        esComp.setHostAddresses(esUrl);
+//        esComp.setUser(esUser);
+//        esComp.setPassword(esPwd);
 
-        camelContext.addComponent("elasticsearch-rest", esComp);
+//        camelContext.addComponent("elasticsearch-rest", esComp);
         camelContext.setStreamCaching(false);
 
         restConfiguration()
@@ -60,7 +60,7 @@ public class SystemRoutes extends RouteBuilder {
                 .port(8086)
                 .enableCORS(true)
                 .corsAllowCredentials(true)
-                .bindingMode(RestBindingMode.off)
+//                .bindingMode(RestBindingMode.off)
                 .apiContextPath("/api-doc")
                 .apiProperty("api.title", "Flow Server").apiProperty("api.version", "1.0.0")
                 .apiProperty("cors", "true");
@@ -340,10 +340,10 @@ public class SystemRoutes extends RouteBuilder {
 //                .marshal().json()
 //                .setHeader("Content-Type", constant("application/json; charset=UTF-8"));
 
-        from("direct:toES")
-                .toD("elasticsearch-rest://docker-cluster?operation=Index&indexName=${header.ESIndexName}")
-                .log("**** body **** ${body}")
-                .group("系统流程").description("写 elasticsearch 流程").setId("AddToElasticsearch");
+//        from("direct:toES")
+//                .toD("elasticsearch-rest://docker-cluster?operation=Index&indexName=${header.ESIndexName}")
+//                .log("**** body **** ${body}")
+//                .group("系统流程").description("写 elasticsearch 流程").setId("AddToElasticsearch");
 
         String uri = "websocket://0.0.0.0:7086/terminal";
         from(uri)

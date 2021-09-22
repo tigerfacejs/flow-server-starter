@@ -20,15 +20,17 @@ public class TerminalAppender extends AppenderBase<ILoggingEvent> {
     public void init(CamelContext camelContext) throws Exception {
         this.camelContext = camelContext;
         if (this.camelContext == null) {
-            RouteBuilder builder = new RouteBuilder() {
-                public void configure() {
-                    String uri = "ahc-ws://127.0.0.1:7086/terminal";
-                    from("direct:logAppendToTerminal").to(uri);
-                    from(uri).log(">>> from server ${body}");
-                }
-            };
             camelContext = new DefaultCamelContext();
-            camelContext.addRoutes(builder);
+            
+//            RouteBuilder builder = new RouteBuilder() {
+//                public void configure() {
+//                    String uri = "ahc-ws://127.0.0.1:7086/terminal";
+//                    from("direct:logAppendToTerminal").to(uri);
+//                    from(uri).log(">>> from server ${body}");
+//                }
+//            };
+
+//            camelContext.addRoutes(builder);
             camelContext.start();
         }
 

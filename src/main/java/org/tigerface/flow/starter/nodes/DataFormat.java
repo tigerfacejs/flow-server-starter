@@ -1,5 +1,7 @@
 package org.tigerface.flow.starter.nodes;
 
+import com.google.zxing.BarcodeFormat;
+import org.apache.camel.dataformat.barcode.BarcodeImageType;
 import org.apache.camel.model.DataFormatDefinition;
 import org.apache.camel.model.dataformat.*;
 
@@ -11,7 +13,6 @@ public class DataFormat {
         String format = (String) props.get("format");
         String type = (String) props.get("type");
         String pretty = (String) props.get("pretty");
-
 
         if (format.equalsIgnoreCase("json")) {
             JsonDataFormat json = new JsonDataFormat(JsonLibrary.Jackson);
@@ -28,6 +29,19 @@ public class DataFormat {
             return base64;
         } else if (format.equalsIgnoreCase("barcode")) {
             BarcodeDataFormat barcode = new BarcodeDataFormat();
+
+            String barcodeImageType = (String) props.get("barcodeImageType");
+            if (barcodeImageType != null) barcode.setImageType(barcodeImageType);
+
+            String barcodeFormat = (String) props.get("barcodeFormat");
+            if (barcodeFormat != null) barcode.setBarcodeFormat(barcodeFormat);
+
+            String barcodeWidth = (String) props.get("barcodeWidth");
+            if (barcodeWidth != null) barcode.setWidth(barcodeWidth);
+
+            String barcodeHeight = (String) props.get("barcodeHeight");
+            if (barcodeHeight != null) barcode.setHeight(barcodeHeight);
+
             return barcode;
         } else if (format.equalsIgnoreCase("csv")) {
             CsvDataFormat csv = new CsvDataFormat();

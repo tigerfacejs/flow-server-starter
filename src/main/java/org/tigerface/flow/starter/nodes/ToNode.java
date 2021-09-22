@@ -15,16 +15,11 @@ public class ToNode extends FlowNode {
     public <T extends ProcessorDefinition<T>> T createAndAppend(Map<String, Object> node, T rd) {
         Map<String, Object> props = (Map<String, Object>) node.get("props");
         String uri = (String) props.get("uri");
+        boolean noDynamic = props.get("noDynamic") != null ? "true".equalsIgnoreCase(props.get("Dynamic").toString()) : false;
 
-//        rd.process(new Processor() {
-//            @Override
-//            public void process(Exchange exchange) throws Exception {
-//                Object body = exchange.getMessage().getBody();
-//                System.out.println("LOG TO >>> uri = " + uri + ", body class = " + body.getClass().getName());
-//            }
-//        });
+        if(noDynamic) rd.to(uri);
+        else rd.toD(uri);
 
-        rd.toD(uri);
         log.info("创建 to 节点");
         return rd;
     }
