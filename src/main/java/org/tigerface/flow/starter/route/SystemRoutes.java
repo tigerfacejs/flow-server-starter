@@ -53,7 +53,11 @@ public class SystemRoutes extends RouteBuilder {
 //        esComp.setPassword(esPwd);
 
 //        camelContext.addComponent("elasticsearch-rest", esComp);
-        camelContext.setStreamCaching(false);
+        /**
+         * 开启全局StreamCaching
+         * 若单独flow不需要StreamCaching，则在流程中用noStreamCaching来关闭当前flow的StreamCaching
+         */
+        camelContext.setStreamCaching(true);
 
         restConfiguration()
                 .component("jetty")
