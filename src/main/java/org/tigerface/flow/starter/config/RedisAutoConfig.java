@@ -57,18 +57,12 @@ public class RedisAutoConfig {
     @Value("${spring.redis.cluster.nodes:}")
     private String nodes;
 
-    private final static String STANDALONE = "standalone";
+    private final static String CLUSTER_MODE = "cluster";
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory(JedisPoolConfig jedisPool) {
         JedisConnectionFactory jedisConnectionFactory;
-        if (STANDALONE.equals(mode)) {
-            RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
-            config.setUsername(username);
-            config.setPassword(password);
-            config.setDatabase(db);
-            jedisConnectionFactory = new JedisConnectionFactory(config);
-        } else {
+        if (CLUSTER_MODE.equals(mode)) {
             RedisClusterConfiguration config = new RedisClusterConfiguration();
             config.setUsername(username);
             config.setPassword(password);
@@ -78,6 +72,12 @@ public class RedisAutoConfig {
                             config.addClusterNode(new RedisNode(item.split(":")[0], Integer.valueOf(item.split(":")[1])))
             );
             jedisConnectionFactory = new JedisConnectionFactory(config, jedisPool);
+        } else {
+            RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
+            config.setUsername(username);
+            config.setPassword(password);
+            config.setDatabase(db);
+            jedisConnectionFactory = new JedisConnectionFactory(config);
         }
         return jedisConnectionFactory;
     }
