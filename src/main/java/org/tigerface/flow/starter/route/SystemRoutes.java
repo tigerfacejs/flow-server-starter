@@ -85,6 +85,8 @@ public class SystemRoutes extends RouteBuilder {
                 .to("direct:deploy")
                 .setHeader("routeId", simple("${body}"))
                 .to("direct:saveFlowToDB")
+                .wireTap("direct:flow-node-synchronous")
+                .end()
                 .setBody(groovy("[errorCode:0, msg:'部署完成']"))
                 .marshal().json()
                 .setHeader("Content-Type", constant("application/json; charset=UTF-8"))
@@ -136,6 +138,8 @@ public class SystemRoutes extends RouteBuilder {
                 .bean("deployService", "remove")
                 .choice().when().simple("${header.routeId} != null")
                 .to("direct:removeFlowToDB")
+                .wireTap("direct:flow-node-synchronous")
+                .end()
                 .setBody(groovy("[errorCode:0, msg:'删除完成']"))
                 .otherwise()
                 .setBody(groovy("[errorCode:1, msg:'参数 routeId 无效']"))
@@ -353,9 +357,9 @@ public class SystemRoutes extends RouteBuilder {
         from(uri)
                 .log(">>> Message received from WebSocket Client : ${body}")
                 .setBody().simple(">> ${body}")
-                .to(uri+"?sendToAll=true");
+                .to(uri + "?sendToAll=true");
 
         from("direct:logAppendToTerminal")
-                .to(uri+"?sendToAll=true");
+                .to(uri + "?sendToAll=true");
     }
 }
