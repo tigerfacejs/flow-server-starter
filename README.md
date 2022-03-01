@@ -36,7 +36,7 @@ Maven 项目中 pom.xml 这样引用依赖
         "method": "get",
         "path": "demo/{who}"
       }
-    }，
+    },
     ...
   ]
 }
